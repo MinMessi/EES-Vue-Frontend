@@ -1,5 +1,5 @@
-import { ActionContext } from "vuex"
-import { AccountState } from "./states"
+import { ActionContext, Commit } from "vuex"
+import { Account, AccountState } from "./states"
 import { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 
@@ -7,6 +7,7 @@ export type AccountActions = {
     requestEmailDuplicationCheckToDjango(context: ActionContext<AccountState, any>, email: string): Promise<boolean>
     requestNicknameDuplicationCheckToDjango(context: ActionContext<AccountState, any>, payload: any): Promise<boolean>
     requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>, accountInfo: { email: string, nickname: string }): Promise<void>
+    requestNicknameToDjango(context: ActionContext<AccountState, any>,email: string): Promise<Account>
 }
 
 const actions: AccountActions = {
@@ -41,7 +42,20 @@ const actions: AccountActions = {
             console.error('신규 계정 생성 실패:', error)
             throw error
         }
-    }
+    },
+    async requestNicknameToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
+        try {
+            const userToken = localStorage.getItem("userToken");
+            const res: AxiosResponse<Account> = 
+            await axiosInst.djangoAxiosInst.post('/account/nickname',  { userToken: userToken } );
+            console.log('data:', res.data)
+            context.commit('REQUEST_NICKNAME_TO_DJANGO', res.data);
+            return res.data
+        } catch (error) {
+            console.error('requestNicknameToDjango() 문제 발생:', error);
+            throw error
+        }
+    },
 };
 
 export default actions;
