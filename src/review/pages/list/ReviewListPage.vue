@@ -3,7 +3,7 @@
     <v-row class="my-5" justify="center">
       <v-col cols="12" class="text-center">
         <h2>PHOTO REVIEW</h2>
-        <router-link class="floating-button" :to="{ name: 'ReviewRegisterPage' }">
+        <router-link v-if="isAuthenticated" class="floating-button" :to="{ name: 'ReviewRegisterPage' }">
           <v-icon left>mdi-pencil</v-icon>
         </router-link>
       </v-col>
@@ -58,6 +58,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 const reviewModule = 'reviewModule';
+const authenticationModule = 'authenticationModule'
 
 export default {
   data() {
@@ -69,6 +70,7 @@ export default {
   },
   computed: {
     ...mapState(reviewModule, ['reviewList']),
+    ...mapState(authenticationModule, ['isAuthenticated']),
     filteredReviews() {
       return this.reviewList.filter(
         (review) =>
