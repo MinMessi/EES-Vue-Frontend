@@ -7,11 +7,6 @@
         </v-row>
         <v-row>
             <v-col cols="12">
-                <v-text-field v-model="writer" label="작성자"/>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
                 <v-textarea v-model="content" label="내용" auto-grow/>
             </v-col>
         </v-row>
@@ -28,6 +23,7 @@
 import { mapActions } from 'vuex'
 
 const communityModule = 'communityModule'
+const accountModule = 'accountModule'
 
 export default {
     data () {
@@ -39,6 +35,7 @@ export default {
     },
     methods: {
         ...mapActions(communityModule, ['requestCreateCommunityToDjango']),
+        ...mapActions(accountModule, ['requestNicknameToDjango']),
         async onSubmit () {
             console.log('작성 완료 버튼 눌럿지 ?')
 
@@ -46,10 +43,11 @@ export default {
                 alert('제목은 최대 30글자까지 가능합니다.')
                 return
             }
-
+            const nickname = await this.requestNicknameToDjango()
+            console.log('nickname:', nickname)
             const payload = {
                 title: this.title,
-                writer: this.writer,
+                writer: nickname,
                 content: this.content,
             }
 
