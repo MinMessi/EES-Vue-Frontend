@@ -22,20 +22,17 @@
         <v-row no-gutters align="center" @click="readRow(item)">
           <v-col cols="1" class="pa-3">
             <v-avatar color="grey" size="40">
-              <v-img :src="item.avatar" v-if="item.avatar"></v-img>
-              <span v-else class="white--text headline">{{ item.writer.charAt(0) }}</span>
+              <v-icon left>mdi-account</v-icon>
             </v-avatar>
           </v-col>
           <v-col cols="5" class="pa-3">
             <div class="subtitle-1 font-weight-medium">{{ item.title }}</div>
-            <div class="caption text--secondary">{{ item.writer }} · {{ item.register_date }}</div>
           </v-col>
           <v-col cols="2" class="pa-3 text-center">
-            <div class="caption">{{ item.jobType || 'N/A' }}</div>
-            <div class="caption text--secondary">in {{ item.location || 'N/A' }}</div>
+            <div class="subtitle-1 font-weight-medium">{{ item.content }}</div>
           </v-col>
           <v-col cols="2" class="pa-3 text-center">
-            <div class="subtitle-2">{{ item.rate ? `$${item.rate}/hr` : 'N/A' }}</div>
+            <div class="caption text--secondary">{{ item.writer }}</div>
           </v-col>
           <v-col cols="2" class="pa-3 d-flex align-center justify-end">
             <v-chip small :color="getChipColor(item.category)">{{ item.category }}</v-chip>
@@ -48,8 +45,8 @@
     </v-hover>
 
     <div class="text-right mb-4">
-      <v-btn color="primary" :to="{ name: 'CommunityRegisterPage' }">
-        게시물 작성
+      <v-btn color="white" :to="{ name: 'CommunityRegisterPage' }">
+        <v-icon>mdi-pencil</v-icon>
       </v-btn>
     </div>
 
@@ -78,9 +75,9 @@ export default {
       return this.filteredItems.slice(startIdx, endIdx)
     },
     filteredItems() {
-      return this.communitys.filter(item =>
-        item.title.toLowerCase().includes(this.search.toLowerCase())
-      )
+      return this.communitys
+        .filter(item => item.title.toLowerCase().includes(this.search.toLowerCase()))
+        .sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
     },
     startIndex() {
       return (this.pagination.page - 1) * this.perPage + 1
@@ -101,7 +98,7 @@ export default {
       })
     },
     filterByTitle() {
-      this.pagination.page = 1  // 검색 시 페이지를 첫 페이지로 초기화
+      this.pagination.page = 1
     },
     getChipColor(category) {
       const colors = {
@@ -128,11 +125,7 @@ export default {
       pagination: {
         page: 1,
       },
-      selectedLocation: 'All Locations',
-      locationOptions: ['All Locations', 'Seoul', 'Busan', 'Incheon'],
       searchQuery: '',
-      sortBy: 'Relevance',
-      sortOptions: ['Relevance', 'Date', 'Title']
     }
   }
 }
@@ -140,8 +133,6 @@ export default {
 
 <style>
 .hover-effect {
-  transform: scale(1.05);
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #F0F0F0;
 }
 </style>
