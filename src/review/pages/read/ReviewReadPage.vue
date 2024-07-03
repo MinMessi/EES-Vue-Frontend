@@ -199,4 +199,10 @@ export default {
 .mdi-icon-white {
   color: #ffffff;
 }
+
+.question-card:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
 </style>
