@@ -12,6 +12,7 @@
       <span class="mdi mdi-shoe-formal"></span>
       <span>PRODUCTS</span>
     </v-btn>
+
     <v-btn text @click="goToCommunityList" class="btn-text">
       <span class="mdi mdi-account-group-outline"></span>
       <span>COMMUNITY</span>
