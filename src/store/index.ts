@@ -5,7 +5,7 @@ import authenticationModule from '@/authentication/store/authenticationModule'
 import productModule from "@/product/store/productModule"
 import cartModule from "@/cart/store/cartModule";
 import accountModule from '@/account/store/accountModule'
-import boardModule from '@/board/store/boardModule'
+import communityModule from '@/community/store/communityModule'
 
 export default createStore({
   state: {
@@ -22,6 +22,6 @@ export default createStore({
     productModule,
     cartModule,
     accountModule,
-    boardModule,
+    communityModule,
   }
 })

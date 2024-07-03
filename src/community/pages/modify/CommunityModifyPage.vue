@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <h2>Commutity</h2>
-        <v-card v-if="board">
+        <v-card v-if="community">
             <v-card-title>게시물 정보</v-card-title>
             <v-card-text>
                 <v-container>
@@ -12,7 +12,7 @@
                     </v-row>
                     <v-row>
                         <v-col cols="12">
-                            <v-text-field v-model="board.writer" readonly label="작성자" />
+                            <v-text-field v-model="community.writer" readonly label="작성자" />
                         </v-col>
                     </v-row>
                     <v-row>
@@ -25,7 +25,7 @@
                             <v-btn color="primary" @click="onModify">수정 완료</v-btn>
                         </v-col>
                         <v-col cols="auto">
-                            <router-link :to="{ name: 'BoardReadPage' }">
+                            <router-link :to="{ name: 'CommunityReadPage' }">
                                 <v-btn color="secondary">돌아가기</v-btn>
                             </router-link>
                         </v-col>
@@ -39,11 +39,11 @@
 <script>
 import { mapActions, mapState } from 'vuex'
 
-const boardModule = 'boardModule'
+const communityModule = 'communityModule'
 
 export default {
     props: {
-        board_id: {
+        communityId: {
             type: String,
             required: true,
         }
@@ -56,29 +56,29 @@ export default {
         }
     },
     computed: {
-        ...mapState(boardModule, ['board'])
+        ...mapState(communityModule, ['community'])
     },
     methods: {
-        ...mapActions(boardModule, ['requestBoardToDjango', 'requestModifyBoardToDjango']),
+        ...mapActions(communityModule, ['requestCommunityToDjango', 'requestModifyCommunityToDjango']),
         async onModify() {
             const payload = {
                 title: this.title,
                 content: this.content,
-                board_id: this.board_id,
+                communityId: this.communityId,
             }
 
-            await this.requestModifyBoardToDjango(payload)
+            await this.requestModifyCommunityToDjango(payload)
             await this.$router.push({
-                name: 'BoardReadPage',
-                params: { board_id: this.board_id }
+                name: 'CommunityReadPage',
+                params: { communityId: this.communityId }
             })
         },
     },
     created() {
-        this.requestBoardToDjango(this.board_id).then(() => {
-            this.title = this.board.title
-            this.writer = this.board.writer
-            this.content = this.board.content
+        this.requestCommunityToDjango(this.communityId).then(() => {
+            this.title = this.community.title
+            this.writer = this.community.writer
+            this.content = this.community.content
         })
     },
 }
