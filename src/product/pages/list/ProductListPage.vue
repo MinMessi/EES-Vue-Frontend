@@ -1,9 +1,17 @@
 <template lang="">
     <v-container>
         <h2>Running Shoes Product List</h2>
-        <div style="text-align: left; margin: 15px;">
+        <!-- <div style="text-align: left; margin: 15px;">
             <router-link :to="{ name: 'ProductRegisterPage' }">
                 상품 등록
+            </router-link>
+        </div> -->
+        <div style="text-align: left; margin: 10px;">
+            <router-link :to="{ name: 'ProductRegisterPage' }">
+            <v-btn @click="goToProductRegisterPage" style="width: 100%; font-size: 16px; font-color: black; border: 3px solid #aaff00; background: linear-gradient(to top, yellow, lightGreen);">
+                <span class="mdi mdi-arrow-down-thin-circle-outline" style="font-size: 25px;"></span>
+                상품 등록                
+            </v-btn>
             </router-link>
         </div>
         <v-row v-if="productList.length > 0">

@@ -9,34 +9,35 @@
     <v-spacer></v-spacer>    
 
     <v-btn text @click="goToProductList" class="btn-text">      
-      <span class="mdi mdi-shoe-formal"></span>
-      <span>PRODUCTS</span>
+      <!-- <span class="mdi mdi-shoe-formal"></span> -->
+      <span>👟PRODUCTS</span>
     </v-btn>
+
     <v-btn text @click="goToCommunityList" class="btn-text">
-      <span class="mdi mdi-account-group-outline"></span>
-      <span>COMMUNITY</span>
+      <!-- <span class="mdi mdi-account-group-outline"></span> -->
+      <span>👨‍👩‍👧‍👦COMMUNITY</span>
     </v-btn>
 
     <v-btn text @click="goToReviewList" class="btn-text">
-      <span class="mdi mdi-star-box"></span>
-      <span>REVIEW</span>
+      <!-- <span class="mdi mdi-star-box"></span> -->
+      <span>⭐REVIEW</span>
     </v-btn> 
 
     <v-btn v-if="isAuthenticated" text @click="goToCart" class="btn-text">
-      <span class="mdi mdi-cart-outline"></span>
-      <span>Cart</span>
+      <!-- <span class="mdi mdi-cart-outline"></span> -->
+      <span>🛒Cart</span>
     </v-btn>
 
     <v-btn v-if="isAuthenticated" text @click="goToOrder" class="btn-text">
-      <v-icon left>mdi-receipt</v-icon>
-      <span>Order</span>
+      <!-- <v-icon left>mdi-receipt</v-icon> -->
+      <span>💵Order</span>
     </v-btn>
     
     <v-menu close-on-content-click>
         <template v-slot:activator="{ props }">
             <v-btn v-bind="props" class="btn-text">
-                <span class="mdi mdi-file-chart"></span>
-                <b>Report</b>
+                <!-- <span class="mdi mdi-file-chart"></span> -->
+                <b>📊Report</b>
             </v-btn>
         </template>
         <v-list>
@@ -80,12 +81,12 @@ export default {
   data() {
     return {
       reportItems: [
-                { title: '구매 동향', action: () => { this.goToHome() } },
-                { title: '회원 이탈', action: () => { this.goToHome() } },
+                { title: '구매 동향 분석', action: () => { this.goToHome() } },
+                { title: '회원 이탈 예측', action: () => { this.goToHome() } },
       ],
       myPageItems: [
-                { title: 'MY PAGE', action: () => { this.goToMyPage() } },
-                { title: 'LOGOUT', action: () => { this.signOut() } },
+                { title: '👤MY PAGE', action: () => { this.goToMyPage() } },
+                { title: '🔚LOGOUT', action: () => { this.signOut() } },
             ]
     }
   },
@@ -104,7 +105,7 @@ export default {
       router.push("/product/list");
     },
     goToCommunityList() {
-      router.push("/board/list");
+      router.push("/community/list");
     },
     goToReviewList() {
       router.push("/review/list");
@@ -179,5 +180,17 @@ export default {
 
 .v-btn:focus .btn-text {
   color: white
+}
+
+/* 드롭다운 메뉴 스타일 */
+.v-menu > .v-overlay__content > .v-card, .v-menu > .v-overlay__content > .v-sheet, .v-menu > .v-overlay__content > .v-list {
+  background-color: #0000008a; /* 투명한 검은색 배경 */
+  color: white;
+}
+
+
+
+.v-list-item:hover {
+  background-color: rgba(170, 255, 0, 0.233);; /* 마우스오버시 배경 색상 */
 }
 </style>
