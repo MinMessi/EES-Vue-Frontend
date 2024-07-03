@@ -21,7 +21,7 @@
         <div v-if="step === 2">
           <v-row justify="center">
             <v-col cols="12" class="d-flex justify-center">
-              <v-text-field v-model="title" label="제목" outlined dense class="input-custom mt-3" />
+                <v-text-field v-model="title" label="제목" :rules="[v => v.length <= 30 || '제목은 최대 30글자까지 가능합니다.']" maxlength="30"/>
             </v-col>
           </v-row>
           <v-row justify="center">
@@ -142,6 +142,10 @@ export default {
     },
     async onSubmit() {
       try {
+          if (this.title.length > 30) {
+            alert('제목은 최대 30글자까지 가능합니다.')
+            return
+          }
           const nickname = await this.requestNicknameToDjango()
           console.log('nickname:', nickname)
         if (this.reviewImage) {
