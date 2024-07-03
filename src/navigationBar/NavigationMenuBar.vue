@@ -104,7 +104,7 @@ export default {
       router.push("/product/list");
     },
     goToCommunityList() {
-      router.push("/board/list");
+      router.push("/community/list");
     },
     goToReviewList() {
       router.push("/review/list");
