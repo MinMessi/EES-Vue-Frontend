@@ -81,8 +81,8 @@ export default {
   data() {
     return {
       reportItems: [
-                { title: '구매 동향 분석', action: () => { this.goToHome() } },
-                { title: '회원 이탈 예측', action: () => { this.goToHome() } },
+                { title: '구매 동향 분석', action: () => { this.goToPurchaseTrendAnalysisPage() } },
+                { title: '회원 이탈 예측', action: () => { this.goToCustomerChurnPredictionPage() } },
       ],
       myPageItems: [
                 { title: '👤MY PAGE', action: () => { this.goToMyPage() } },
@@ -125,6 +125,12 @@ export default {
     },
     goToMyPage () {
         router.push('/account/mypage')
+    },
+    goToPurchaseTrendAnalysisPage () {
+        router.push('/report/purchase-trend-analysis')
+    },
+    goToCustomerChurnPredictionPage () {
+        router.push('/report/customer-churn-prediction')
     },
   },
   mounted() {
