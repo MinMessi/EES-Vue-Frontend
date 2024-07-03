@@ -9,10 +9,14 @@
         <v-card-subtitle class="subtitle-section">
           {{ review.writer }}
         </v-card-subtitle>
-        <v-img :src="getReviewImageUrl(review.reviewImage)" aspect-ratio="1" class="image-placeholder">
+        <v-img
+          :src="getReviewImageUrl(review.reviewImage)"
+          aspect-ratio="1"
+          class="image-placeholder"
+        >
           <template v-slot:placeholder>
             <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="grey lighten-5"/>
+              <v-progress-circular indeterminate color="grey lighten-5" />
             </v-row>
           </template>
         </v-img>
@@ -20,7 +24,10 @@
           {{ review.content }}
         </v-card-text>
       </v-card>
-      <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
+      <v-icon class="share" @click="copyUrlToClipboard">mdi-share-variant</v-icon>
+      <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext"
+        >mdi-chevron-right</v-icon
+      >
     </div>
     <router-link class="floating-button" :to="{ name: 'ReviewListPage' }">
       <v-icon color="white">mdi-undo</v-icon>
@@ -29,10 +36,10 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
-import '@mdi/font/css/materialdesignicons.css'
+import { mapActions, mapState } from "vuex";
+import "@mdi/font/css/materialdesignicons.css";
 
-const reviewModule = 'reviewModule'
+const reviewModule = "reviewModule";
 
 export default {
   props: {
@@ -47,10 +54,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(reviewModule, ['review']),
+    ...mapState(reviewModule, ["review"]),
   },
   methods: {
-    ...mapActions(reviewModule, ['requestReviewToDjango']),
+    ...mapActions(reviewModule, ["requestReviewToDjango"]),
     navigateToPrevious() {
       const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
@@ -66,18 +73,33 @@ export default {
       const review = await this.requestReviewToDjango(nextId);
       if (!review || !review.reviewImage) {
         this.showNextArrow = false;
-        this.$router.push(`/review/read/${this.reviewId-1}`);
+        this.$router.push(`/review/read/${this.reviewId - 1}`);
       } else {
         this.showNextArrow = true;
-        this.$router.push(`/review/read/${nextId+1}`);
+        this.$router.push(`/review/read/${nextId + 1}`);
       }
     },
     getReviewImageUrl(imageName) {
-      console.log('imageName:', imageName);
+      console.log("imageName:", imageName);
       if (imageName) {
         return require(`@/assets/images/reviewImages/${imageName}`);
       }
       return null;
+    },
+    copyUrlToClipboard() {
+      const url = window.location.href;
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+        alert("주소가 복사되었습니다.");
+      } catch (err) {
+        alert("주소 복사 실패");
+        console.error("Failed to copy: ", err);
+      }
+      document.body.removeChild(textarea);
     },
   },
   async created() {
@@ -96,9 +118,9 @@ export default {
       } else {
         this.showNextArrow = true;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -139,9 +161,10 @@ export default {
 
 .subtitle-section {
   padding: 8px 16px;
-  color: #757575;
+  color: #000000;
+  font-weight: bold;
   font-size: 1rem;
-  text-align: left;
+  text-align: center;
   background-color: #fafafa;
   border-bottom: 1px solid #eeeeee;
 }
@@ -155,7 +178,8 @@ export default {
   text-align: left;
 }
 
-.left-arrow, .right-arrow {
+.left-arrow,
+.right-arrow {
   font-size: 3rem;
   cursor: pointer;
   color: #000000;
@@ -172,14 +196,23 @@ export default {
   right: 100px;
 }
 
-.left-arrow:hover, .right-arrow:hover {
+.left-arrow:hover,
+.right-arrow:hover {
   color: #4caf50;
+}
+
+.share {
+  color: #000000;
+  cursor: pointer;
+  position: absolute;
+  margin-top: 590px;
+  right: 310px;
 }
 
 .floating-button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  right: 80px; /* 아이콘과 간격 조절 */
   background-color: #000000;
   color: #ffffff;
   padding: 10px;
