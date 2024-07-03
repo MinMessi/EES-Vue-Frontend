@@ -26,11 +26,6 @@
           </v-row>
           <v-row justify="center">
             <v-col cols="12" class="d-flex justify-center">
-              <v-text-field v-model="writer" label="작성자" outlined dense class="input-custom mt-3" />
-            </v-col>
-          </v-row>
-          <v-row justify="center">
-            <v-col cols="12" class="d-flex justify-center">
               <v-textarea v-model="content" label="내용" auto-grow outlined dense class="input-custom mt-3" />
             </v-col>
           </v-row>
@@ -57,6 +52,8 @@
 <script>
 import { mapActions } from 'vuex'
 
+const accountModule = 'accountModule'
+const authenticationModule = 'authenticationModule'
 const reviewModule = 'reviewModule'
 
 export default {
@@ -87,6 +84,8 @@ export default {
   },
   methods: {
     ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
+    ...mapActions(accountModule, ['requestNicknameToDjango']),
+    ...mapActions(authenticationModule, ['requestUserInfoToDjango']),
     typeText() {
       if (this.starsDisplayed) {
         return;
@@ -143,18 +142,20 @@ export default {
     },
     async onSubmit() {
       try {
-          if (this.reviewImage) {
-              const imageFormData = new FormData()
-              imageFormData.append('title', this.title)
-              imageFormData.append('writer', this.writer)
-              imageFormData.append('content', this.content)
-              imageFormData.append('rating', this.rating)
-              imageFormData.append('reviewImage', this.reviewImage)
+          const nickname = await this.requestNicknameToDjango()
+          console.log('nickname:', nickname)
+        if (this.reviewImage) {
+            const imageFormData = new FormData()
+            imageFormData.append('title', this.title)
+            imageFormData.append('writer', nickname)
+            imageFormData.append('content', this.content)
+            imageFormData.append('rating', this.rating)
+            imageFormData.append('reviewImage', this.reviewImage)
 
-              const response = await this.requestCreateReviewToDjango(imageFormData)
-              this.uploadedFileName = response.data.imageName
-              await this.$router.push({ name: 'ReviewListPage' });
-              window.location.reload(true);
+            const response = await this.requestCreateReviewToDjango(imageFormData)
+            this.uploadedFileName = response.data.imageName
+            await this.$router.push({ name: 'ReviewListPage' });
+            window.location.reload(true);
           } else {
               console.log('이미지 파일을 선택하세요')
           }
