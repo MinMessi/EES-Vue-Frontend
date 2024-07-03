@@ -53,7 +53,6 @@
 import { mapActions } from 'vuex'
 
 const accountModule = 'accountModule'
-const authenticationModule = 'authenticationModule'
 const reviewModule = 'reviewModule'
 
 export default {
@@ -85,7 +84,6 @@ export default {
   methods: {
     ...mapActions(reviewModule, ['requestCreateReviewToDjango']),
     ...mapActions(accountModule, ['requestNicknameToDjango']),
-    ...mapActions(authenticationModule, ['requestUserInfoToDjango']),
     typeText() {
       if (this.starsDisplayed) {
         return;
