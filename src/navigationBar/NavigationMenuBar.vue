@@ -124,7 +124,7 @@ export default {
         router.push('/order')
     },
     goToMyPage () {
-        router.push('/mypage')
+        router.push('/account/mypage')
     },
   },
   mounted() {
