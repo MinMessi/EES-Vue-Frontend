@@ -17,8 +17,17 @@
         </v-row>
       </v-card-text>
     </v-card>
-    <v-hover v-for="item in pagedItems" :key="item.communityId" v-slot:default="{ isHovering, props }">
-      <v-card class="mb-4" outlined v-bind="props" :class="{ 'hover-effect': isHovering }">
+    <v-hover
+      v-for="item in pagedItems"
+      :key="item.communityId"
+      v-slot:default="{ isHovering, props }"
+    >
+      <v-card
+        class="mb-4"
+        outlined
+        v-bind="props"
+        :class="{ 'hover-effect': isHovering }"
+      >
         <v-row no-gutters align="center" @click="readRow(item)">
           <v-col cols="1" class="pa-3">
             <v-avatar color="grey" size="40">
@@ -28,14 +37,18 @@
           <v-col cols="5" class="pa-3">
             <div class="subtitle-1 font-weight-medium">{{ item.title }}</div>
           </v-col>
-          <v-col cols="2" class="pa-3 text-center">
-            <div class="subtitle-1 font-weight-medium">{{ item.content }}</div>
-          </v-col>
-          <v-col cols="2" class="pa-3 text-center">
+          <v-col cols="1" class="pa-3 text-left">
             <div class="caption text--secondary">{{ item.writer }}</div>
           </v-col>
+          <v-col cols="2" class="pa-3 text-center">
+            <div class="subtitle-1 font-weight-medium">
+              {{ formatDate(item.regDate) }}
+            </div>
+          </v-col>
+          <v-col cols="1" class="pa-3 text-center">
+            <div class="subtitle-1 font-weight-medium">{{ item.viewCount }}</div>
+          </v-col>
           <v-col cols="2" class="pa-3 d-flex align-center justify-end">
-            <v-chip small :color="getChipColor(item.category)">{{ item.category }}</v-chip>
             <v-btn icon color="amber" class="ml-2">
               <v-icon>mdi-star-outline</v-icon>
             </v-btn>
@@ -61,78 +74,67 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState } from "vuex";
 
-const communityModule = 'communityModule'
+const communityModule = "communityModule";
 
 export default {
-  components: {},
   computed: {
-    ...mapState(communityModule, ['communitys']),
+    ...mapState(communityModule, ["communitys"]),
     pagedItems() {
-      const startIdx = (this.pagination.page - 1) * this.perPage
-      const endIdx = startIdx + this.perPage
-      return this.filteredItems.slice(startIdx, endIdx)
+      const startIdx = (this.pagination.page - 1) * this.perPage;
+      const endIdx = startIdx + this.perPage;
+      return this.filteredItems.slice(startIdx, endIdx);
     },
     filteredItems() {
       return this.communitys
-        .filter(item => item.title.toLowerCase().includes(this.search.toLowerCase()))
+        .filter((item) => item.title.toLowerCase().includes(this.search.toLowerCase()))
         .sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
     },
     startIndex() {
-      return (this.pagination.page - 1) * this.perPage + 1
+      return (this.pagination.page - 1) * this.perPage + 1;
     },
     endIndex() {
-      return Math.min(this.startIndex + this.perPage - 1, this.communitys.length)
-    }
+      return Math.min(this.startIndex + this.perPage - 1, this.communitys.length);
+    },
   },
   mounted() {
-    this.requestCommunityListToDjango()
+    this.requestCommunityListToDjango();
   },
   methods: {
-    ...mapActions(communityModule, ['requestCommunityListToDjango']),
+    ...mapActions(communityModule, ["requestCommunityListToDjango"]),
     readRow(item) {
       this.$router.push({
-        name: 'CommunityReadPage',
-        params: { communityId: item.communityId.toString() }
-      })
+        name: "CommunityReadPage",
+        params: { communityId: item.communityId.toString() },
+      });
     },
     filterByTitle() {
-      this.pagination.page = 1
+      this.pagination.page = 1;
     },
-    getChipColor(category) {
-      const colors = {
-        'General': 'light-blue lighten-4',
-        'Question': 'amber lighten-4',
-        'Discussion': 'light-green lighten-4',
-        'Announcement': 'pink lighten-4'
-      }
-      return colors[category] || 'grey lighten-3'
-    }
+    formatDate(dateString) {
+      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+      return new Date(dateString)
+        .toLocaleDateString("ko-KR", options)
+        .replace(/\./g, "-")
+        .replace(/ /g, "")
+        .slice(0, -1);
+    },
   },
   data() {
     return {
-      search: '',
-      headerTitle: [
-        { text: 'No', value: 'communityId', align: 'start', sortable: true },
-        { text: '제목', value: 'title', align: 'start' },
-        { text: '작성자', value: 'writer', align: 'start' },
-        { text: '작성일자', value: 'register_date', align: 'start' },
-        { text: '카테고리', value: 'category', align: 'start' },
-        { text: '즐겨찾기', value: 'actions', align: 'center', sortable: false }
-      ],
+      search: "",
       perPage: 5,
       pagination: {
         page: 1,
       },
-      searchQuery: '',
-    }
-  }
-}
+    };
+  },
+};
 </script>
 
 <style>
 .hover-effect {
-    background-color: #F0F0F0;
+  background-color: #f0f0f0;
 }
 </style>

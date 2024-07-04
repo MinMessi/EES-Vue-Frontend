@@ -3,7 +3,6 @@ import { Community, CommunityState } from './states'
 import axios, { AxiosResponse } from 'axios'
 import axiosInst from '@/utility/axiosInstance'
 
-
 export type CommunityActions = {
     requestCreateCommunityToDjango(context: ActionContext<CommunityState, unknown>, payload: {
         title: string,
@@ -49,6 +48,8 @@ const actions: CommunityActions = {
         try {
             const res: AxiosResponse<Community> = await axiosInst.djangoAxiosInst.get(`/community/read/${communityId}`);
             context.commit('REQUEST_COMMUNITY_TO_DJANGO', res.data);
+            // viewCount 증가 요청
+            await context.dispatch('incrementViewCount', communityId);
         } catch (error) {
             console.log('requestCommunityToDjango() error')
             throw error
@@ -58,9 +59,7 @@ const actions: CommunityActions = {
     async requestModifyCommunityToDjango(context: ActionContext<CommunityState, any>, payload: {
         title: string, content: string, communityId: number
     }): Promise<void> {
-
         const { title, content, communityId } = payload
-
         try {
             await axiosInst.djangoAxiosInst.put(`/community/modify/${communityId}`, { title, content })
         } catch (error) {
