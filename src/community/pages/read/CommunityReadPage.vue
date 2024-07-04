@@ -1,70 +1,75 @@
 <template>
-    <v-container>
-        <h2>Community</h2>
-        <v-card v-if="community">
-            <v-card-title>게시물 정보</v-card-title>
-            <v-card-text>
-                <v-container>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="community.title" readonly label="제목" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="community.writer" readonly label="작성자" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-textarea v-model="community.content" readonly label="내용" auto-grow />
-                        </v-col>
-                    </v-row>
-                    <v-row justify="end">
-                        <v-col cols="auto">
-                            <router-link :to="{ name: 'CommunityModifyPage', params: { communityId } }">
-                                <v-btn color="primary">수정</v-btn>
-                            </router-link>
-                        </v-col>
-                        <v-col cols="auto">
-                            <v-btn color="error" @click="onDelete">삭제</v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <router-link :to="{ name: 'CommunityListPage' }">
-                                <v-btn color="secondary">돌아가기</v-btn>
-                            </router-link>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-card-text>
-        </v-card>
-    </v-container>
+  <v-container>
+    <h2>Community</h2>
+    <v-card v-if="community">
+      <v-card-title>게시물 정보</v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field v-model="community.title" readonly label="제목" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field v-model="community.writer" readonly label="작성자" />
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="12">
+              <v-textarea v-model="community.content" readonly label="내용" auto-grow />
+            </v-col>
+          </v-row>
+          <v-row justify="end">
+            <v-col cols="auto">
+              <router-link :to="{ name: 'CommunityModifyPage', params: { communityId } }">
+                <v-btn color="primary">수정</v-btn>
+              </router-link>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn color="error" @click="onDelete">삭제</v-btn>
+            </v-col>
+            <v-col cols="auto">
+              <router-link :to="{ name: 'CommunityListPage' }">
+                <v-btn color="secondary">돌아가기</v-btn>
+              </router-link>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState } from "vuex";
 
-const communityModule = 'communityModule'
+const communityModule = "communityModule";
 
 export default {
-    props: {
-        communityId: {
-            type: String,
-            required: true,
-        }
+  props: {
+    communityId: {
+      type: String,
+      required: true,
     },
-    computed: {
-        ...mapState(communityModule, ['community'])
+  },
+  computed: {
+    ...mapState(communityModule, ["community"]),
+  },
+  methods: {
+    ...mapActions(communityModule, [
+      "requestCommunityToDjango",
+      "requestDeleteCommunityToDjango",
+      "incrementViewCount",
+    ]),
+    async onDelete() {
+      await this.requestDeleteCommunityToDjango(this.communityId);
+      await this.$router.push({ name: "CommunityListPage" });
     },
-    methods: {
-        ...mapActions(communityModule, ['requestCommunityToDjango', 'requestDeleteCommunityToDjango']),
-        async onDelete() {
-            await this.requestDeleteCommunityToDjango(this.communityId)
-            await this.$router.push({ name: 'CommunityListPage' })
-        },
-    },
-    created() {
-        this.requestCommunityToDjango(this.communityId)
-    },
-}
+  },
+  async created() {
+    await this.requestCommunityToDjango(this.communityId);
+    await this.incrementViewCount(this.communityId);
+  },
+};
 </script>
