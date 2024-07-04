@@ -10,6 +10,7 @@ export interface Community {
     content: string
     register_date: string
     update_date: string
+    viewCount: number
 }
 
 const state: CommunityState = {
