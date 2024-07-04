@@ -37,7 +37,7 @@ export default {
         ...mapActions(communityModule, ['requestCreateCommunityToDjango']),
         ...mapActions(accountModule, ['requestNicknameToDjango']),
         async onSubmit () {
-            console.log('작성 완료 버튼 눌럿지 ?')
+            console.log('작성 완료 버튼 누름')
 
             if (this.title.length > 30) {
                 alert('제목은 최대 30글자까지 가능합니다.')
@@ -60,7 +60,8 @@ export default {
             })
         },
         async onCancel () {
-            console.log('취소 버튼 눌럿지 ?')
+            console.log("취소 버튼 누름")
+            this.$router.go(-1)
         }
     }
 }
