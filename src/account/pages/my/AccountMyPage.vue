@@ -1,6 +1,6 @@
 <template>
     <v-container>
-        <v-card>
+        <v-card class="profile-section">
             <v-card-title class="title-section">사용자 정보</v-card-title>
                 <div>
                     <img :src="imageSrc" class="profile-image"/>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import imageSrc from '@/assets/images/fixed/runningman.png'
+import imageSrc from '@/assets/images/fixed/profile_img.png'
 import { mapActions } from 'vuex'
 
 const accountModule = 'accountModule'
@@ -63,6 +63,16 @@ export default {
 </script>
 
 <style scoped>
+.profile-section {
+    width: 100%;
+    max-width: 500px; /* 적절한 크기로 설정 */
+    height: auto;
+    margin: auto;
+    display: block;
+    object-fit: cover;
+    margin-top: 30px;
+}
+
 .title-section {
   padding: 16px;
   font-weight: bold;

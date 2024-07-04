@@ -58,7 +58,7 @@
     </v-hover>
 
     <div class="text-right mb-4">
-      <v-btn color="white" :to="{ name: 'CommunityRegisterPage' }">
+      <v-btn v-if="isAuthenticated" color="white" :to="{ name: 'CommunityRegisterPage' }">
         <v-icon>mdi-pencil</v-icon>
       </v-btn>
     </div>
@@ -77,10 +77,12 @@
 import { mapActions, mapState } from "vuex";
 
 const communityModule = "communityModule";
+const authenticationModule = "authenticationModule";
 
 export default {
   computed: {
     ...mapState(communityModule, ["communitys"]),
+    ...mapState(authenticationModule, ["isAuthenticated"]),
     pagedItems() {
       const startIdx = (this.pagination.page - 1) * this.perPage;
       const endIdx = startIdx + this.perPage;
