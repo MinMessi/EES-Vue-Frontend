@@ -3,7 +3,11 @@
     <v-row class="my-5" justify="center">
       <v-col cols="12" class="text-center">
         <h2>PHOTO REVIEW</h2>
-        <router-link v-if="isAuthenticated" class="floating-button" :to="{ name: 'ReviewRegisterPage' }">
+        <router-link
+          v-if="isAuthenticated"
+          class="floating-button"
+          :to="{ name: 'ReviewRegisterPage' }"
+        >
           <v-icon left>mdi-pencil</v-icon>
         </router-link>
       </v-col>
@@ -25,7 +29,14 @@
       </v-col>
       <v-col cols="12">
         <v-row v-if="filteredReviews.length > 0">
-          <v-col v-for="(review, index) in sortedReviews" :key="index" cols="12" sm="6" md="4" lg="3">
+          <v-col
+            v-for="(review, index) in sortedReviews"
+            :key="index"
+            cols="12"
+            sm="6"
+            md="4"
+            lg="3"
+          >
             <v-card class="review-card" @click="goToReviewReadPage(review.reviewId)">
               <div class="image-container">
                 <v-img :src="getReviewImageUrl(review.reviewImage)" class="review-image">
@@ -36,11 +47,30 @@
                   </template>
                 </v-img>
               </div>
-              <v-card-title>{{ review.title }}</v-card-title>
-              <v-card-subtitle>{{ review.writer }}</v-card-subtitle>
-              <v-card-subtitle>{{ review.viewCount }}</v-card-subtitle>
+              <v-card-title>
+                <v-icon left style="margin-right: 4px; width: 40px; height: 40px">
+                  <v-img
+                    src="@/assets/images/fixed/community-list-title.png"
+                    alt="title-icon"
+                  ></v-img>
+                </v-icon>
+                {{ review.title }}
+              </v-card-title>
+              <v-card-subtitle>
+                <v-icon left style="margin-right: 4px">mdi-account</v-icon
+                >{{ review.writer }}
+              </v-card-subtitle>
+              <v-card-subtitle>
+                <v-icon left style="margin-right: 4px">mdi-eye</v-icon
+                >{{ review.viewCount }}
+              </v-card-subtitle>
               <v-card-actions>
-                <v-rating v-model="review.rating" dense readonly half-increments></v-rating>
+                <v-rating
+                  v-model="review.rating"
+                  dense
+                  readonly
+                  half-increments
+                ></v-rating>
               </v-card-actions>
             </v-card>
           </v-col>
