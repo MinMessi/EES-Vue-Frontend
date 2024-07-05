@@ -17,6 +17,16 @@
         </v-row>
       </v-card-text>
     </v-card>
+    <v-card class="mb-4">
+      <v-row no-gutters>
+        <v-col cols="1" class="pa-3 text-center"><strong>프로필</strong></v-col>
+        <v-col cols="5" class="pa-3 text-center"><strong>제목</strong></v-col>
+        <v-col cols="1" class="pa-3 text-center"><strong>작성자</strong></v-col>
+        <v-col cols="2" class="pa-3 text-center"><strong>등록일</strong></v-col>
+        <v-col cols="1" class="pa-3 text-center"><strong>조회수</strong></v-col>
+        <v-col cols="2" class="pa-3 text-center"></v-col>
+      </v-row>
+    </v-card>
     <v-hover
       v-for="item in pagedItems"
       :key="item.communityId"
@@ -34,7 +44,7 @@
               <v-icon left>mdi-account</v-icon>
             </v-avatar>
           </v-col>
-          <v-col cols="5" class="pa-3">
+          <v-col cols="5" class="pa-3 text-center">
             <div class="subtitle-1 font-weight-medium">{{ item.title }}</div>
           </v-col>
           <v-col cols="1" class="pa-3 text-left">
