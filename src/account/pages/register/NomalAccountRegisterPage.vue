@@ -4,7 +4,7 @@
             <v-col cols="12" md="8" lg="6">
                 <v-card>
                     <v-card-title>
-                        <span class="headline">간편 신규 회원가입</span>
+                        <span class="headline">그냥 회원가입</span>
                     </v-card-title>
                     
                     
@@ -16,7 +16,8 @@
                                     variant="solo"                                    
                                     required
                                     :rules="emailRules"
-                                    :disabled="true"/>
+                                    placeholder="example@gmail.com"
+                            />
                             
                             <v-row align="center">
                                 <v-col cols="10">
@@ -38,13 +39,14 @@
                                             isNicknameValid == true"
                                         type="button"
                                         @click="checkNicknameDuplication">
-                                        중복 검사
+                                                중복 검사
                                     </v-btn>
-                                </v-col>
+                                    
+                                </v-col>                                
                             </v-row>
                             
                             <div v-if="isNicknameValid" class="valid-nickname-box" style="color: chartreuse;">
-                                        사용 가능한 닉네임입니다.
+                                                사용 가능한 닉네임입니다.
                             </div>
 
                             <div style="margin-top: 32px;">
@@ -109,7 +111,7 @@ export default {
             nickname: '',
             emailRules: [
                 v => !!v || 'Email 은 필수입니다!',
-                v => /.+@.+\..+/.test(v) || '유효한 Email 주소를 입력하세요!'
+                v => /.+@.+\..+/.test(v) || '영문자로 시작하는 유효한 Email 주소를 입력하세요!'
             ],
             nicknameRules: [v => !!v || 'Nickname은 필수입니다!'],
             // passwordRules: [v => !!v || 'Password는 필수입니다!'],
@@ -136,13 +138,28 @@ export default {
         ...mapActions(authenticationModule, ['requestUserInfoToDjango', 'requestAddRedisAccessTokenToDjango']),
         ...mapActions(accountModule, ['requestNicknameDuplicationCheckToDjango', 'requestCreateNewAccountToDjango',]),
 
-        async requestUserInfo () {
+        // async requestUserInfo () {
+        //     try {
+        //         const userInfo = await this.requestUserInfoToDjango()
+        //         this.email = userInfo.kakao_account.email
+        //     } catch (error) {
+        //         console.error('에러:', error)
+        //         alert('사용자 정보를 가져오는데 실패하였습니다!')
+        //     }
+        // },
+        async requestUserInfo() {
             try {
-                const userInfo = await this.requestUserInfoToDjango()
-                this.email = userInfo.kakao_account.email
+                const userInfo = await this.requestUserInfoToDjango();
+                console.log(userInfo);  // userInfo 구조 확인
+                if (userInfo && userInfo.kakao_account && userInfo.kakao_account.email) {
+                    this.email = userInfo.kakao_account.email;
+                } else {
+                    this.email = '';  // 기본 이메일 설정
+                }
             } catch (error) {
-                console.error('에러:', error)
-                alert('사용자 정보를 가져오는데 실패하였습니다!')
+                console.error('에러:', error);
+                alert('사용자 정보를 가져오는데 실패하였습니다!');
+                this.email = '';  // 에러 발생 시 기본 이메일 설정
             }
         },
         async checkNicknameDuplication () {
@@ -169,7 +186,7 @@ export default {
                 const accountInfo = {
                     email: this.email,
                     nickname: this.nickname,
-                    // password: this.password,     // 비밀번호 추가
+                    // password: this.password,        // 비밀번호 추가
                     gender: this.gender,            // 성별 추가
                     birthyear: this.birthyear,      // 생년월일 추가
                 }
