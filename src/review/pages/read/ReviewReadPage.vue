@@ -216,17 +216,18 @@ export default {
 .floating-button {
   position: fixed;
   bottom: 20px;
-  right: 80px; /* 아이콘과 간격 조절 */
-  background-color: #000000;
-  color: #ffffff;
-  padding: 10px;
+  right: 20px;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
   border-radius: 50%;
   text-align: center;
+  text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
 }
 
 .floating-button:hover {
