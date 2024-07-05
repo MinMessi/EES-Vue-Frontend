@@ -48,8 +48,7 @@ const actions: CommunityActions = {
         try {
             const res: AxiosResponse<Community> = await axiosInst.djangoAxiosInst.get(`/community/read/${communityId}`);
             context.commit('REQUEST_COMMUNITY_TO_DJANGO', res.data);
-            // viewCount 증가 요청
-            await context.dispatch('incrementViewCount', communityId);
+            await context.dispatch('incrementCommunityViewCount', communityId);
         } catch (error) {
             console.log('requestCommunityToDjango() error')
             throw error

@@ -57,7 +57,10 @@ export default {
     ...mapState(reviewModule, ["review"]),
   },
   methods: {
-    ...mapActions(reviewModule, ["requestReviewToDjango"]),
+    ...mapActions(reviewModule, [
+      "requestReviewToDjango",
+      "incrementReviewViewCount",
+    ]),
     navigateToPrevious() {
       const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
@@ -109,6 +112,7 @@ export default {
     } else {
       this.showNextArrow = true;
     }
+    await this.incrementReviewViewCount(this.reviewId);
   },
   watch: {
     async reviewId(newId) {

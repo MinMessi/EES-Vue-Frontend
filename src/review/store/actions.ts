@@ -15,6 +15,7 @@ const actions: ReviewActions = {
     async requestReviewToDjango(context: ActionContext<ReviewState, any>, reviewId: number): Promise<void> {
         try {
             const res: AxiosResponse<Review> = await axiosInst.djangoAxiosInst.get(`/review/read/${reviewId}`);
+            await context.dispatch('incrementReviewViewCount', reviewId);
             console.log('data:', res.data)
             context.commit('REQUEST_REVIEW_TO_DJANGO', res.data);
         } catch (error) {

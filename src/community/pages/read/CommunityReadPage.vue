@@ -60,7 +60,7 @@ export default {
     ...mapActions(communityModule, [
       "requestCommunityToDjango",
       "requestDeleteCommunityToDjango",
-      "incrementViewCount",
+      "incrementCommunityViewCount",
     ]),
     async onDelete() {
       await this.requestDeleteCommunityToDjango(this.communityId);
@@ -69,7 +69,7 @@ export default {
   },
   async created() {
     await this.requestCommunityToDjango(this.communityId);
-    await this.incrementViewCount(this.communityId);
+    await this.incrementCommunityViewCount(this.communityId);
   },
 };
 </script>

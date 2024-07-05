@@ -10,6 +10,7 @@ export interface Review {
     content: string
     registeredDate: string
     updatedDate: string
+    viewCount: number
 }
 
 const state: ReviewState = {
