@@ -38,7 +38,7 @@
               </div>
               <v-card-title>{{ review.title }}</v-card-title>
               <v-card-subtitle>{{ review.writer }}</v-card-subtitle>
-              <v-card-subtitle>{{ formatDate(review.regDate) }}</v-card-subtitle>
+              <v-card-subtitle>{{ review.viewCount }}</v-card-subtitle>
               <v-card-actions>
                 <v-rating v-model="review.rating" dense readonly half-increments></v-rating>
               </v-card-actions>
@@ -47,7 +47,7 @@
         </v-row>
         <v-row v-else>
           <v-col cols="12" class="text-center">
-            <v-alert type="info">등록된 상품이 없습니다!</v-alert>
+            <v-alert type="info">등록된 리뷰가 없습니다!</v-alert>
           </v-col>
         </v-row>
       </v-col>
@@ -56,35 +56,34 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-const reviewModule = 'reviewModule';
-const authenticationModule = 'authenticationModule'
+import { mapActions, mapState } from "vuex";
+const reviewModule = "reviewModule";
+const authenticationModule = "authenticationModule";
 
 export default {
   data() {
     return {
-      search: '',
-      sortOptions: ['최신순', '오래된순', '평점 높은 순'],
-      selectedSort: '최신순',
+      search: "",
+      sortOptions: ["최신순", "오래된순", "평점 높은 순"],
+      selectedSort: "최신순",
     };
   },
   computed: {
-    ...mapState(reviewModule, ['reviewList']),
-    ...mapState(authenticationModule, ['isAuthenticated']),
+    ...mapState(reviewModule, ["reviewList"]),
+    ...mapState(authenticationModule, ["isAuthenticated"]),
     filteredReviews() {
       return this.reviewList.filter(
         (review) =>
-          review.title.includes(this.search) ||
-          review.writer.includes(this.search)
+          review.title.includes(this.search) || review.writer.includes(this.search)
       );
     },
     sortedReviews() {
       let sorted = this.filteredReviews.slice();
-      if (this.selectedSort === '최신순') {
+      if (this.selectedSort === "최신순") {
         sorted.sort((a, b) => new Date(b.regDate) - new Date(a.regDate));
-      } else if (this.selectedSort === '오래된순') {
+      } else if (this.selectedSort === "오래된순") {
         sorted.sort((a, b) => new Date(a.regDate) - new Date(b.regDate));
-      } else if (this.selectedSort === '평점 높은 순') {
+      } else if (this.selectedSort === "평점 높은 순") {
         sorted.sort((a, b) => b.rating - a.rating);
       }
       return sorted;
@@ -94,21 +93,21 @@ export default {
     this.requestReviewListToDjango();
   },
   methods: {
-    ...mapActions(reviewModule, ['requestReviewListToDjango']),
+    ...mapActions(reviewModule, ["requestReviewListToDjango"]),
     getReviewImageUrl(imageName) {
       return require(`@/assets/images/reviewImages/${imageName}`);
     },
     goToReviewReadPage(reviewId) {
       this.$router.push({
-        name: 'ReviewReadPage',
+        name: "ReviewReadPage",
         params: { reviewId: reviewId },
       });
     },
     formatDate(dateString) {
       const date = new Date(dateString);
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
       return `${year}. ${month}. ${day}`;
     },
   },
@@ -117,12 +116,12 @@ export default {
 
 <style scoped>
 h2 {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-weight: bold;
 }
 
 .v-btn-toggle .v-btn {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   color: #555;
   background-color: white;
   border: 1px solid #ccc;
@@ -143,19 +142,19 @@ h2 {
 }
 
 .v-card-title {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-weight: bold;
   text-align: center;
 }
 
 .v-card-subtitle {
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   font-weight: normal;
   text-align: center;
 }
 
 .v-rating {
-  color: #FFBF00;
+  color: #ffbf00;
 }
 
 .review-card {
