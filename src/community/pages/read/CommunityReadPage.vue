@@ -17,9 +17,8 @@
           {{ community.viewCount }}
         </div>
       </v-card-subtitle>
-      <v-card-text>
-        <v-textarea v-model="community.content" readonly auto-grow filled></v-textarea>
-      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text class="card-text">{{ community.content }}</v-card-text>
     </v-card>
 
     <div v-if="isAuthenticated" class="floating-menu-container">
@@ -139,13 +138,33 @@ export default {
 </script>
 
 <style scoped>
+.headline {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+    font-size: 25px;
+}
+
 .v-card {
   max-width: 800px;
   margin: auto;
 }
 
 .main {
-  margin-top: 150px;
+  margin-top: 90px;
+}
+
+.main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-text {
+  width: 100%;
+  height: 300px;
+  font-size: 16px;
+  overflow: auto;
 }
 
 .floating-menu-container {
@@ -163,6 +182,7 @@ export default {
   border-radius: 50%;
   width: 60px;
   height: 60px;
+  margin-right: 13px;
 }
 
 .floating-button:hover {
@@ -182,6 +202,7 @@ export default {
 }
 .menu-item:hover {
   background-color: #333;
+  color: #4caf50;
 }
 
 .left-arrow,
