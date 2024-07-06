@@ -22,6 +22,11 @@
                             <v-text-field v-model="gender" readonly label="성별"/>
                         </v-col>
                     </v-row>
+                    <v-row>
+                        <v-col cols="12">
+                            <v-text-field v-model="birthyear" readonly label="출생년도"/>
+                        </v-col>
+                    </v-row>
                 </v-container>
             </v-card-text>
         </v-card>
@@ -47,6 +52,7 @@ export default {
             email:'',
             nickname: '',
             gender: '',
+            birthyear: '',
         }
     },
     async created () {
@@ -54,15 +60,17 @@ export default {
                 const nickname = await this.requestNicknameToDjango()
                 const email = await this.requestEmailToDjango()
                 const gender = await this.requestGenderToDjango()
+                const birthyear = await this.requestBirthyearToDjango()
                 this.nickname = nickname
                 this.email = email
                 this.gender = gender
+                this.birthyear = birthyear
             } catch (error) {
                 console.log('사용자 닉네임 및 이메일 정보 가져오는 과정에서 에러 발생:', error)
             }
     },
     methods: {
-        ...mapActions(accountModule, ['requestNicknameToDjango', 'requestEmailToDjango', 'requestGenderToDjango']),
+        ...mapActions(accountModule, ['requestNicknameToDjango', 'requestEmailToDjango', 'requestGenderToDjango', 'requestBirthyearToDjango']),
         async onClickAccountWithdraw () {
             this.$router.push({ name: 'AccountWithdrawPage' });
         },
