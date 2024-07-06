@@ -214,5 +214,6 @@ h2 {
 
 .floating-button:hover {
   background-color: #333;
+  color: #4caf50;
 }
 </style>
