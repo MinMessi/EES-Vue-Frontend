@@ -11,6 +11,7 @@ export type AccountActions = {
     requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
     requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse>
     requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account>
+    requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account>
 }
 
 const actions: AccountActions = {
@@ -85,7 +86,7 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account> {
+    async requestGenderToDjango(context: ActionContext<AccountState, any>, birth: string): Promise<Account> {
         try {
             const userToken = localStorage.getItem("userToken");
             const res: AxiosResponse<Account> = 
@@ -95,6 +96,19 @@ const actions: AccountActions = {
             return res.data
         } catch (error) {
             console.error('requestGenderToDjango() 문제 발생:', error);
+            throw error
+        }
+    },
+    async requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account> {
+        try {
+            const userToken = localStorage.getItem("userToken");
+            const res: AxiosResponse<Account> = 
+            await axiosInst.djangoAxiosInst.post('/account/birthyear',  { userToken: userToken } );
+            console.log('data:', res.data)
+            context.commit('REQUEST_BIRTHYEAR_TO_DJANGO', res.data);
+            return res.data
+        } catch (error) {
+            console.error('requestBirthyearToDjango() 문제 발생:', error);
             throw error
         }
     },
