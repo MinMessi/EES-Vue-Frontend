@@ -24,13 +24,15 @@
           {{ review.content }}
         </v-card-text>
       </v-card>
-      <v-icon class="share" @click="copyUrlToClipboard">mdi-share-variant</v-icon>
-      <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext"
-        >mdi-chevron-right</v-icon
-      >
     </div>
-    <div v-if="isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
-      <v-btn class="floating-button">
+    <div
+      v-if="isAuthenticated"
+      class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+      <v-btn 
+        class="floating-button"
+        @mouseover="showMenu"
+        @mouseleave="hideMenu"
+      >
         <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
       </v-btn>
       <div v-if="menuOpen" class="floating-menu">
@@ -41,13 +43,22 @@
           수정
         </v-btn>
         <v-btn class="menu-item" @click="showDeleteDialog = true"> 삭제 </v-btn>
+        <v-btn class="menu-item" @click="copyUrlToClipboard"> 공유하기 </v-btn>
         <v-btn class="menu-item" @click="$router.push({ name: 'ReviewListPage' })">
           돌아가기
         </v-btn>
       </div>
     </div>
-    <div v-if="!isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
-      <v-btn class="floating-button" @click="$router.push({ name: 'ReviewListPage' })">
+    <div
+      v-if="!isAuthenticated"
+      class="floating-menu-container"
+    >
+      <v-btn 
+        class="floating-button"
+        @mouseover="showMenu"
+        @mouseleave="hideMenu"
+        @click="$router.push({ name: 'ReviewListPage' })"
+      >
         <v-icon color="white">mdi-undo</v-icon>
       </v-btn>
     </div>
@@ -59,6 +70,14 @@
           <v-spacer></v-spacer>
           <v-btn color="red" text @click="confirmDelete">확인</v-btn>
         </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="showShareDialog" max-width="300px">
+      <v-card class="share-dialog">
+        <v-card-text>
+          <v-icon color="green">mdi-check-circle</v-icon>
+          주소가 복사되었습니다.
+        </v-card-text>
       </v-card>
     </v-dialog>
   </v-container>
@@ -83,6 +102,7 @@ export default {
       menuOpen: false,
       showNextArrow: true,
       showDeleteDialog: false,
+      showShareDialog: false,
     };
   },
   computed: {
@@ -127,7 +147,10 @@ export default {
       textarea.select();
       try {
         document.execCommand("copy");
-        alert("주소가 복사되었습니다.");
+        this.showShareDialog = true;
+        setTimeout(() => {
+          this.showShareDialog = false;
+        }, 2000);
       } catch (err) {
         alert("주소 복사 실패");
         console.error("Failed to copy: ", err);
@@ -277,19 +300,18 @@ export default {
   margin-bottom: 10px;
 }
 
-.mdi-icon-white {
-  color: #ffffff;
-}
-
 .menu-item {
   margin-bottom: 10px;
   background-color: #000;
   color: #fff;
 }
-
 .menu-item:hover {
   background-color: #333;
   color: #4caf50;
+}
+
+.mdi-icon-white {
+  color: #ffffff;
 }
 
 .question-card:hover {
