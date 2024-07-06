@@ -9,7 +9,8 @@ export type AccountActions = {
     requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>, accountInfo: { email: string, nickname: string }): Promise<void>
     requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account>
     requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
-    requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: {reason: string}): Promise<AxiosResponse>
+    requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse>
+    requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account>
 }
 
 const actions: AccountActions = {
@@ -81,6 +82,19 @@ const actions: AccountActions = {
             return res.data
         } catch (error) {
             alert('requestWithdrawalToDjango() 문제 발생!')
+            throw error
+        }
+    },
+    async requestGenderToDjango(context: ActionContext<AccountState, any>, gender: string): Promise<Account> {
+        try {
+            const userToken = localStorage.getItem("userToken");
+            const res: AxiosResponse<Account> = 
+            await axiosInst.djangoAxiosInst.post('/account/gender',  { userToken: userToken } );
+            console.log('data:', res.data)
+            context.commit('REQUEST_GENDER_TO_DJANGO', res.data);
+            return res.data
+        } catch (error) {
+            console.error('requestGenderToDjango() 문제 발생:', error);
             throw error
         }
     },
