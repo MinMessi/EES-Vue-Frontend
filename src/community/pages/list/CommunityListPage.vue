@@ -24,7 +24,7 @@
         <v-col cols="1" class="pa-3 text-center"><strong>작성자</strong></v-col>
         <v-col cols="2" class="pa-3 text-center"><strong>등록일</strong></v-col>
         <v-col cols="1" class="pa-3 text-center"><strong>조회수</strong></v-col>
-        <v-col cols="2" class="pa-3 text-center"></v-col>
+        <v-col cols="2" class="pa-3 text-center"><strong>즐겨찾기</strong></v-col>
       </v-row>
     </v-card>
     <v-hover
@@ -39,7 +39,7 @@
         :class="{ 'hover-effect': isHovering }"
       >
         <v-row no-gutters align="center" @click="readRow(item)">
-          <v-col cols="1" class="pa-3">
+          <v-col cols="1" class="pa-3 d-flex justify-center">
             <v-avatar color="grey" size="40">
               <v-icon left>mdi-account</v-icon>
             </v-avatar>
@@ -58,7 +58,7 @@
           <v-col cols="1" class="pa-3 text-center">
             <div class="subtitle-1 font-weight-medium">{{ item.viewCount }}</div>
           </v-col>
-          <v-col cols="2" class="pa-3 d-flex align-center justify-end">
+          <v-col cols="2" class="pa-3 d-flex align-center justify-center">
             <v-btn icon color="amber" class="ml-2">
               <v-icon>mdi-star-outline</v-icon>
             </v-btn>
@@ -148,5 +148,8 @@ export default {
 <style>
 .hover-effect {
   background-color: #f0f0f0;
+}
+.v-container {
+  margin-top: 50px;
 }
 </style>
