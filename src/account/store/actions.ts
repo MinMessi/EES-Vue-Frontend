@@ -9,6 +9,7 @@ export type AccountActions = {
     requestCreateNewAccountToDjango(context: ActionContext<AccountState, any>, accountInfo: { email: string, nickname: string }): Promise<void>
     requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account>
     requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account>
+    requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: {reason: string}): Promise<AxiosResponse>
 }
 
 const actions: AccountActions = {
@@ -67,6 +68,19 @@ const actions: AccountActions = {
             return res.data
         } catch (error) {
             console.error('requestEmailToDjango() 문제 발생:', error);
+            throw error
+        }
+    },
+    async requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: {reason: string}): Promise<AxiosResponse> {
+        console.log('requestWithdrawalToDjango()')
+        const { reason } = payload
+        console.log('전송할 데이터:', { reason })
+        try {
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/account/withdraw', { reason })
+            console.log('res:', res.data)
+            return res.data
+        } catch (error) {
+            alert('requestWithdrawalToDjango() 문제 발생!')
             throw error
         }
     },
