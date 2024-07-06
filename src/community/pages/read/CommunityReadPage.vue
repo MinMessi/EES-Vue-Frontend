@@ -21,8 +21,8 @@
       <v-card-text class="card-text">{{ community.content }}</v-card-text>
     </v-card>
 
-    <div v-if="isAuthenticated" class="floating-menu-container">
-      <v-btn class="floating-button" @click="toggleMenu">
+    <div v-if="isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+      <v-btn class="floating-button">
         <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
       </v-btn>
       <div v-if="menuOpen" class="floating-menu">
@@ -38,7 +38,7 @@
         </v-btn>
       </div>
     </div>
-    <div v-if="!isAuthenticated" class="floating-menu-container">
+    <div v-if="!isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
       <v-btn class="floating-button" @click="$router.push({ name: 'CommunityListPage' })">
         <v-icon color="white">mdi-undo</v-icon>
       </v-btn>
@@ -110,8 +110,11 @@ export default {
       await this.requestDeleteCommunityToDjango(this.communityId);
       this.$router.push({ name: "CommunityListPage" });
     },
-    toggleMenu() {
-      this.menuOpen = !this.menuOpen;
+    showMenu() {
+      this.menuOpen = true;
+    },
+    hideMenu() {
+      this.menuOpen = false;
     },
     formatDate(dateString) {
       const options = { year: "numeric", month: "2-digit", day: "2-digit" };
