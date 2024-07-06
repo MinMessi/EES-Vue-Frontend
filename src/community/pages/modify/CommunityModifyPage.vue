@@ -1,85 +1,156 @@
 <template>
-    <v-container>
-        <h2>Commutity</h2>
-        <v-card v-if="community">
-            <v-card-title>게시물 정보</v-card-title>
-            <v-card-text>
-                <v-container>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="title" label="제목" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="community.writer" readonly label="작성자" />
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-textarea v-model="content" label="내용" auto-grow />
-                        </v-col>
-                    </v-row>
-                    <v-row justify="end">
-                        <v-col cols="auto">
-                            <v-btn color="primary" @click="onModify">수정 완료</v-btn>
-                        </v-col>
-                        <v-col cols="auto">
-                            <router-link :to="{ name: 'CommunityReadPage' }">
-                                <v-btn color="secondary">돌아가기</v-btn>
-                            </router-link>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-card-text>
-        </v-card>
-    </v-container>
+  <v-container>
+  <v-icon class="left-arrow" @click="$router.push({ name: 'CommunityReadPage', params: { communityId } })">mdi-chevron-left</v-icon>
+    <v-card class="main" v-if="community" outlined>
+      <v-text-field class="headline" v-model="title"></v-text-field>
+      <v-card-subtitle
+        style="display: flex; justify-content: space-between; align-items: center"
+      >
+        <div>
+          <v-icon small style="margin-right: -12px; margin-bottom: 2px"
+            >mdi-account</v-icon
+          >
+          <span style="margin-right: 12px">{{ community.writer }}</span> |
+          <v-icon small style="margin-right: -12px; margin-bottom: 2px"
+            >mdi-calendar</v-icon
+          >
+          {{ formatDate(community.regDate) }}
+        </div>
+      </v-card-subtitle>
+      <v-divider></v-divider>
+      <v-card-text class="card-text">
+        <v-textarea v-model="content" auto-grow />
+      </v-card-text>
+    </v-card>
+    <v-icon class="right-arrow" @click="onModify"
+      >mdi-check</v-icon
+    >
+  </v-container>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState } from "vuex";
 
-const communityModule = 'communityModule'
+const communityModule = "communityModule";
 
 export default {
-    props: {
-        communityId: {
-            type: String,
-            required: true,
-        }
+  props: {
+    communityId: {
+      type: String,
+      required: true,
     },
-    data() {
-        return {
-            title: '',
-            writer: '',
-            content: '',
-        }
-    },
-    computed: {
-        ...mapState(communityModule, ['community'])
-    },
-    methods: {
-        ...mapActions(communityModule, ['requestCommunityToDjango', 'requestModifyCommunityToDjango']),
-        async onModify() {
-            const payload = {
-                title: this.title,
-                content: this.content,
-                communityId: this.communityId,
-            }
+  },
+  data() {
+    return {
+      title: "",
+      writer: "",
+      content: "",
+    };
+  },
+  computed: {
+    ...mapState(communityModule, ["community"]),
+  },
+  methods: {
+    ...mapActions(communityModule, [
+      "requestCommunityToDjango",
+      "requestModifyCommunityToDjango",
+    ]),
+    async onModify() {
+      const payload = {
+        title: this.title,
+        content: this.content,
+        communityId: this.communityId,
+      };
 
-            await this.requestModifyCommunityToDjango(payload)
-            await this.$router.push({
-                name: 'CommunityReadPage',
-                params: { communityId: this.communityId }
-            })
-        },
+      await this.requestModifyCommunityToDjango(payload);
+      await this.$router.push({
+        name: "CommunityReadPage",
+        params: { communityId: this.communityId },
+      });
     },
-    created() {
-        this.requestCommunityToDjango(this.communityId).then(() => {
-            this.title = this.community.title
-            this.writer = this.community.writer
-            this.content = this.community.content
-        })
+    formatDate(dateString) {
+      const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+      return new Date(dateString)
+        .toLocaleDateString("ko-KR", options)
+        .replace(/\./g, "-")
+        .replace(/ /g, "")
+        .slice(0, -1);
     },
-}
+  },
+  created() {
+    this.requestCommunityToDjango(this.communityId).then(() => {
+      this.title = this.community.title;
+      this.writer = this.community.writer;
+      this.content = this.community.content;
+    });
+  },
+};
 </script>
+
+<style scoped>
+.headline {
+  text-align: center;
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.v-card {
+  max-width: 800px;
+  margin: auto;
+}
+
+.main {
+  margin-top: 90px;
+}
+
+.main:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-text {
+  width: 100%;
+  height: 300px;
+  font-size: 16px;
+  overflow: auto;
+}
+
+.v-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.v-icon:hover {
+  color: #4caf50;
+}
+
+.left-arrow,
+.right-arrow {
+  font-size: 3rem;
+  cursor: pointer;
+  color: #000000;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.left-arrow {
+  left: 100px;
+}
+
+.right-arrow {
+  right: 100px;
+}
+
+.left-arrow:hover,
+.right-arrow:hover {
+  color: #4caf50;
+}
+</style>
