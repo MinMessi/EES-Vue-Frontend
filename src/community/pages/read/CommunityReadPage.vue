@@ -7,13 +7,13 @@
         style="display: flex; justify-content: space-between; align-items: center"
       >
         <div>
-          <v-icon small>mdi-account</v-icon>
-          {{ community.writer }} |
-          <v-icon small>mdi-calendar</v-icon>
+          <v-icon small style="margin-right: -12px; margin-bottom: 2px;">mdi-account</v-icon>
+          <span style="margin-right: 12px;">{{ community.writer }}</span> |
+          <v-icon small style="margin-right: -12px; margin-bottom: 2px;">mdi-calendar</v-icon>
           {{ formatDate(community.regDate) }}
         </div>
         <div>
-          <v-icon small>mdi-eye</v-icon>
+          <v-icon small style="margin-right: -12px; margin-bottom: 2px;">mdi-eye</v-icon>
           {{ community.viewCount }}
         </div>
       </v-card-subtitle>
@@ -49,12 +49,12 @@
     >
 
     <v-dialog v-model="showDeleteDialog" max-width="500px">
-      <v-card>
+      <v-card class="black-white-dialog">
         <v-card-text>정말로 삭제하시겠습니까?</v-card-text>
         <v-card-actions>
+          <v-btn color="green" text @click="showDeleteDialog = false">취소</v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="showDeleteDialog = false">취소</v-btn>
-          <v-btn color="red darken-1" text @click="confirmDelete">확인</v-btn>
+          <v-btn color="red" text @click="confirmDelete">확인</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -219,5 +219,14 @@ export default {
 
 .v-icon:hover {
   color: #4caf50;
+}
+
+.black-white-dialog {
+  background-color: black;
+  color: white;
+}
+
+.v-card-actions {
+  justify-content: space-between;
 }
 </style>
