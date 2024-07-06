@@ -36,7 +36,7 @@
                             bg-color="rgba(0, 0, 0, 0.6)"
                             :rules="[passwordRequired]"
                             :append-inner-icon="
-                                visible ? 'mdi-eye-off' : 'mdi-eye'
+                                visible ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="visible ? 'text' : 'password'"
                             @click:append-inner="visible = !visible"
