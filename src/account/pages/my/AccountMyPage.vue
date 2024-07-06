@@ -12,8 +12,10 @@
         <v-divider class="my-3"></v-divider>
         <v-row dense>
           <v-col cols="6">
-            <v-icon>{{ gender === 'man' ? 'mdi-gender-male' : 'mdi-gender-female' }}</v-icon>
-            <span class="ml-1">{{ gender === 'man' ? '남성' : '여성' }}</span>
+            <v-icon>{{
+              gender === "man" ? "mdi-gender-male" : "mdi-gender-female"
+            }}</v-icon>
+            <span class="ml-1">{{ gender === "man" ? "남성" : "여성" }}</span>
           </v-col>
           <v-col cols="6">
             <v-icon>mdi-calendar</v-icon>
@@ -23,49 +25,72 @@
       </v-card-text>
     </v-card>
   </div>
+  <div class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+    <v-btn class="floating-button">
+      <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
+    </v-btn>
+    <div v-if="menuOpen" class="floating-menu">
+      <v-btn
+        class="menu-item"
+        @click="$router.push({ name: 'CommunityModifyPage', params: { communityId } })"
+      >
+        수정
+      </v-btn>
+      <v-btn class="menu-item" @click="$router.push({ name: 'AccountWithdrawPage' })">
+        회원탈퇴
+      </v-btn>
+    </div>
+  </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
-const accountModule = 'accountModule'
+const accountModule = "accountModule";
 
 export default {
-  data () {
+  data() {
     return {
-      imageSrc: require('@/assets/images/fixed/profile_img.png'),
-      email: '',
-      nickname: '',
-      gender: '',
-      birthyear: '',
-    }
+      imageSrc: require("@/assets/images/fixed/profile_img.png"),
+      email: "",
+      nickname: "",
+      gender: "",
+      birthyear: "",
+      menuOpen: false,
+    };
   },
-  async created () {
+  async created() {
     try {
-      const nickname = await this.requestNicknameToDjango()
-      const email = await this.requestEmailToDjango()
-      const gender = await this.requestGenderToDjango()
-      const birthyear = await this.requestBirthyearToDjango()
-      this.nickname = nickname
-      this.email = email
-      this.gender = gender
-      this.birthyear = birthyear
+      const nickname = await this.requestNicknameToDjango();
+      const email = await this.requestEmailToDjango();
+      const gender = await this.requestGenderToDjango();
+      const birthyear = await this.requestBirthyearToDjango();
+      this.nickname = nickname;
+      this.email = email;
+      this.gender = gender;
+      this.birthyear = birthyear;
     } catch (error) {
-      console.log('사용자 정보를 가져오는 과정에서 에러 발생:', error)
+      console.log("사용자 정보를 가져오는 과정에서 에러 발생:", error);
     }
   },
   methods: {
     ...mapActions(accountModule, [
-      'requestNicknameToDjango',
-      'requestEmailToDjango',
-      'requestGenderToDjango',
-      'requestBirthyearToDjango'
+      "requestNicknameToDjango",
+      "requestEmailToDjango",
+      "requestGenderToDjango",
+      "requestBirthyearToDjango",
     ]),
-    onClickAccountWithdraw () {
-      this.$router.push({ name: 'AccountWithdrawPage' })
+    onClickAccountWithdraw() {
+      this.$router.push({ name: "AccountWithdrawPage" });
     },
-  }
-}
+    showMenu() {
+      this.menuOpen = true;
+    },
+    hideMenu() {
+      this.menuOpen = false;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -75,6 +100,12 @@ export default {
   display: flex;
   justify-content: center;
   margin-top: 170px;
+}
+
+.id-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
 .lanyard {
@@ -89,7 +120,7 @@ export default {
 }
 
 .lanyard::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 50%;
@@ -103,7 +134,7 @@ export default {
 .id-card {
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   position: relative;
   padding-top: 20px;
@@ -126,5 +157,43 @@ export default {
 .v-avatar {
   margin: 0 auto;
   border: 3px solid #f0f0f0;
+}
+
+.floating-menu-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+.floating-button {
+  background-color: #000;
+  color: #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  margin-right: 13px;
+}
+
+.floating-button:hover {
+  background-color: #333;
+}
+
+.floating-menu {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+.menu-item {
+  margin-bottom: 10px;
+  background-color: #000;
+  color: #fff;
+}
+.menu-item:hover {
+  background-color: #333;
+  color: #4caf50;
 }
 </style>
