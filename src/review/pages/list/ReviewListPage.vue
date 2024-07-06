@@ -48,12 +48,6 @@
                 </v-img>
               </div>
               <v-card-title>
-                <v-icon left style="margin-right: 4px; width: 40px; height: 40px">
-                  <v-img
-                    src="@/assets/images/fixed/community-list-title.png"
-                    alt="title-icon"
-                  ></v-img>
-                </v-icon>
                 {{ review.title }}
               </v-card-title>
               <v-card-subtitle>
