@@ -36,7 +36,7 @@
                             bg-color="rgba(0, 0, 0, 0.6)"
                             :rules="[passwordRequired]"
                             :append-inner-icon="
-                                visible ? 'mdi-eye-off' : 'mdi-eye'
+                                visible ? 'mdi-eye' : 'mdi-eye-off'
                             "
                             :type="visible ? 'text' : 'password'"
                             @click:append-inner="visible = !visible"
@@ -56,21 +56,19 @@
                         </v-btn>
                     </v-form>
                 </v-responsive>
+                <v-btn color="purple darken-2" class="black--text mt-2" block @click="goToNomalAccountRegisterPage">
+                    <router-link :to="{ name: 'NomalAccountRegisterPage' }" class="custom-link">
+                        <v-icon small class="ml-2">mdi-account-plus</v-icon>
+                            <span class="option-text"> 회원가입 </span>
+                    </router-link>
+                </v-btn>
 
                 <v-divider :thickness="2" color="#fff"></v-divider>
 
                 <div>다른 방법으로 로그인하기</div>
                 
 
-                <v-btn color="yellow darken-2" class="black--text mt-2" block @click="goToKakaoLogin">
-                    <v-icon left>mdi-chat</v-icon>
-                            간편 카카오 로그인
-                </v-btn>
-                <v-btn color="purple darken-2" class="black--text mt-2" block @click="goToNomalAccountRegisterPage">
-                    <router-link :to="{ name: 'NomalAccountRegisterPage' }" class="custom-link">
-                        <v-icon small class="ml-2">mdi-account-plus</v-icon>
-                            <span class="option-text"> 회원 가입 </span>
-                    </router-link>
+                <v-btn color="#FEE500" class="black--text mt-2 kakao-login-btn" block @click="goToKakaoLogin">
                 </v-btn>
             </div>
         </div>
@@ -253,6 +251,16 @@ export default {
 
 .v-form .v-text-field {
     margin-bottom: 8px;
+}
+
+.kakao-login-btn {
+    background-image: url("@/assets/images/fixed/kakao_login.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 :deep(.v-label.v-field-label) {
