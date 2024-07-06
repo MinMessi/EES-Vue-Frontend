@@ -33,7 +33,7 @@
         >
           수정
         </v-btn>
-        <v-btn class="menu-item" @click="onDelete"> 삭제 </v-btn>
+        <v-btn class="menu-item" @click="showDeleteDialog = true"> 삭제 </v-btn>
         <v-btn class="menu-item" @click="$router.push({ name: 'CommunityListPage' })">
           돌아가기
         </v-btn>
@@ -47,6 +47,17 @@
     <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext"
       >mdi-chevron-right</v-icon
     >
+
+    <v-dialog v-model="showDeleteDialog" max-width="500px">
+      <v-card>
+        <v-card-text>정말로 삭제하시겠습니까?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="showDeleteDialog = false">취소</v-btn>
+          <v-btn color="red darken-1" text @click="confirmDelete">확인</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -66,13 +77,14 @@ export default {
   data: () => ({
     menuOpen: false,
     showNextArrow: true,
+    showDeleteDialog: false,
   }),
   computed: {
-    ...mapState(communityModule, ["community"]),
-    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState("communityModule", ["community"]),
+    ...mapState("authenticationModule", ["isAuthenticated"]),
   },
   methods: {
-    ...mapActions(communityModule, [
+    ...mapActions("communityModule", [
       "requestCommunityToDjango",
       "requestDeleteCommunityToDjango",
       "incrementCommunityViewCount",
@@ -90,6 +102,10 @@ export default {
       await this.requestCommunityToDjango(nextId);
       await this.incrementCommunityViewCount(nextId);
       this.showNextArrow = nextId !== 1;
+    },
+    async confirmDelete() {
+      await this.onDelete();
+      this.showDeleteDialog = false;
     },
     async onDelete() {
       await this.requestDeleteCommunityToDjango(this.communityId);
@@ -116,6 +132,7 @@ export default {
     async communityId(newId) {
       const community = await this.requestCommunityToDjango(newId);
       this.showNextArrow = Number(newId) !== 1;
+      await this.incrementCommunityViewCount(newId);
     },
   },
 };
@@ -146,7 +163,6 @@ export default {
   border-radius: 50%;
   width: 60px;
   height: 60px;
-  margin-right: 10px;
 }
 
 .floating-button:hover {
