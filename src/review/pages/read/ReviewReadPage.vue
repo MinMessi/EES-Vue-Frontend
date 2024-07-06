@@ -29,9 +29,38 @@
         >mdi-chevron-right</v-icon
       >
     </div>
-    <router-link class="floating-button" :to="{ name: 'ReviewListPage' }">
-      <v-icon color="white">mdi-undo</v-icon>
-    </router-link>
+    <div v-if="isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+      <v-btn class="floating-button">
+        <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
+      </v-btn>
+      <div v-if="menuOpen" class="floating-menu">
+        <v-btn
+          class="menu-item"
+          @click="$router.push({ name: 'ReviewModifyPage', params: { reviewId } })"
+        >
+          수정
+        </v-btn>
+        <v-btn class="menu-item" @click="showDeleteDialog = true"> 삭제 </v-btn>
+        <v-btn class="menu-item" @click="$router.push({ name: 'ReviewListPage' })">
+          돌아가기
+        </v-btn>
+      </div>
+    </div>
+    <div v-if="!isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+      <v-btn class="floating-button" @click="$router.push({ name: 'ReviewListPage' })">
+        <v-icon color="white">mdi-undo</v-icon>
+      </v-btn>
+    </div>
+    <v-dialog v-model="showDeleteDialog" max-width="500px">
+      <v-card class="black-white-dialog">
+        <v-card-text>정말로 삭제하시겠습니까?</v-card-text>
+        <v-card-actions>
+          <v-btn color="green" text @click="showDeleteDialog = false">취소</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="red" text @click="confirmDelete">확인</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -40,6 +69,7 @@ import { mapActions, mapState } from "vuex";
 import "@mdi/font/css/materialdesignicons.css";
 
 const reviewModule = "reviewModule";
+const authenticationModule = "authenticationModule";
 
 export default {
   props: {
@@ -50,17 +80,17 @@ export default {
   },
   data() {
     return {
+      menuOpen: false,
       showNextArrow: true,
+      showDeleteDialog: false,
     };
   },
   computed: {
-    ...mapState(reviewModule, ["review"]),
+    ...mapState("reviewModule", ["review"]),
+    ...mapState("authenticationModule", ["isAuthenticated"]),
   },
   methods: {
-    ...mapActions(reviewModule, [
-      "requestReviewToDjango",
-      "incrementReviewViewCount",
-    ]),
+    ...mapActions(reviewModule, ["requestReviewToDjango", "incrementReviewViewCount"]),
     navigateToPrevious() {
       const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
@@ -103,6 +133,12 @@ export default {
         console.error("Failed to copy: ", err);
       }
       document.body.removeChild(textarea);
+    },
+    showMenu() {
+      this.menuOpen = true;
+    },
+    hideMenu() {
+      this.menuOpen = false;
     },
   },
   async created() {
@@ -213,34 +249,55 @@ export default {
   right: 310px;
 }
 
-.floating-button {
+.floating-menu-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+.floating-button {
   background-color: #000;
   color: #fff;
-  padding: 10px 20px;
   border-radius: 50%;
-  text-align: center;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 60px;
   height: 60px;
+  margin-right: 13px;
 }
 
 .floating-button:hover {
-  background-color: #333333;
+  background-color: #333;
+}
+
+.floating-menu {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
 }
 
 .mdi-icon-white {
   color: #ffffff;
 }
 
+.menu-item {
+  margin-bottom: 10px;
+  background-color: #000;
+  color: #fff;
+}
+
+.menu-item:hover {
+  background-color: #333;
+  color: #4caf50;
+}
+
 .question-card:hover {
   transform: scale(1.15);
   box-shadow: 0 6px 30px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s, box-shadow 0.3s;
+}
+.v-icon:hover {
+  color: #4caf50;
 }
 </style>
