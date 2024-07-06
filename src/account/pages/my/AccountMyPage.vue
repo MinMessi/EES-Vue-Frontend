@@ -1,117 +1,130 @@
 <template>
-    <v-container>
-        <v-card class="profile-section">
-            <v-card-title class="title-section">사용자 정보</v-card-title>
-                <div>
-                    <img :src="imageSrc" class="profile-image"/>
-                </div>
-            <v-card-text>
-                <v-container>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="nickname" readonly label="닉네임"/>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="email" readonly label="이메일"/>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="gender" readonly label="성별"/>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="12">
-                            <v-text-field v-model="birthyear" readonly label="출생년도"/>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-card-text>
-        </v-card>
-
-        <div class="button-container">
-            <v-btn color="red" @click="onClickAccountWithdraw" class="action-button">
-                <span class="button-text">회원 탈퇴</span>
-            </v-btn>
-        </div>
-    </v-container>
+  <div class="id-card-container">
+    <div class="lanyard"></div>
+    <v-card class="id-card mx-auto" max-width="300">
+      <div class="company-logo">IT, SHOE</div>
+      <v-avatar size="120" class="mt-8 avatar-margin">
+        <v-img :src="imageSrc"></v-img>
+      </v-avatar>
+      <v-card-text>
+        <h2 class="text-h5 mb-2">{{ nickname }}</h2>
+        <p class="subtitle-1">{{ email }}</p>
+        <v-divider class="my-3"></v-divider>
+        <v-row dense>
+          <v-col cols="6">
+            <v-icon>{{ gender === 'man' ? 'mdi-gender-male' : 'mdi-gender-female' }}</v-icon>
+            <span class="ml-1">{{ gender === 'man' ? '남성' : '여성' }}</span>
+          </v-col>
+          <v-col cols="6">
+            <v-icon>mdi-calendar</v-icon>
+            <span class="ml-1">{{ birthyear }}</span>
+          </v-col>
+        </v-row>
+      </v-card-text>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import imageSrc from '@/assets/images/fixed/profile_img.png'
 import { mapActions } from 'vuex'
 
 const accountModule = 'accountModule'
 
 export default {
-    data () {
-        return {
-            imageSrc,
-            email:'',
-            nickname: '',
-            gender: '',
-            birthyear: '',
-        }
-    },
-    async created () {
-        try {
-                const nickname = await this.requestNicknameToDjango()
-                const email = await this.requestEmailToDjango()
-                const gender = await this.requestGenderToDjango()
-                const birthyear = await this.requestBirthyearToDjango()
-                this.nickname = nickname
-                this.email = email
-                this.gender = gender
-                this.birthyear = birthyear
-            } catch (error) {
-                console.log('사용자 닉네임 및 이메일 정보 가져오는 과정에서 에러 발생:', error)
-            }
-    },
-    methods: {
-        ...mapActions(accountModule, ['requestNicknameToDjango', 'requestEmailToDjango', 'requestGenderToDjango', 'requestBirthyearToDjango']),
-        async onClickAccountWithdraw () {
-            this.$router.push({ name: 'AccountWithdrawPage' });
-        },
+  data () {
+    return {
+      imageSrc: require('@/assets/images/fixed/profile_img.png'),
+      email: '',
+      nickname: '',
+      gender: '',
+      birthyear: '',
     }
+  },
+  async created () {
+    try {
+      const nickname = await this.requestNicknameToDjango()
+      const email = await this.requestEmailToDjango()
+      const gender = await this.requestGenderToDjango()
+      const birthyear = await this.requestBirthyearToDjango()
+      this.nickname = nickname
+      this.email = email
+      this.gender = gender
+      this.birthyear = birthyear
+    } catch (error) {
+      console.log('사용자 정보를 가져오는 과정에서 에러 발생:', error)
+    }
+  },
+  methods: {
+    ...mapActions(accountModule, [
+      'requestNicknameToDjango',
+      'requestEmailToDjango',
+      'requestGenderToDjango',
+      'requestBirthyearToDjango'
+    ]),
+    onClickAccountWithdraw () {
+      this.$router.push({ name: 'AccountWithdrawPage' })
+    },
+  }
 }
 </script>
 
 <style scoped>
-.profile-section {
-    width: 100%;
-    max-width: 500px; /* 적절한 크기로 설정 */
-    height: auto;
-    margin: auto;
-    display: block;
-    object-fit: cover;
-    margin-top: 30px;
+.id-card-container {
+  position: relative;
+  padding-top: 50px;
+  display: flex;
+  justify-content: center;
+  margin-top: 170px;
 }
 
-.title-section {
-  padding: 16px;
-  font-weight: bold;
-  font-size: 1.5rem;
-  text-align: center;
-  background-color: #fafafa;
-  border-bottom: 1px solid #eeeeee;
+.lanyard {
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 15px;
+  height: 170px;
+  background-color: #333;
+  border-radius: 5px 5px 0 0;
 }
 
-.profile-image {
-  width: 100%;
-  max-width: 300px; /* 적절한 크기로 설정 */
-  height: auto;
-  margin: auto;
-  display: block;
+.lanyard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 10px;
+  background-color: #555;
+  border-radius: 5px 5px 0 0;
+}
+
+.id-card {
   border-radius: 10px;
-  object-fit: cover;
-  margin-top: 30px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  position: relative;
+  padding-top: 20px;
 }
 
-.button-container{
-    text-align: center;
-    margin-top: 50px;
-    margin-bottom: 50px;
+.company-logo {
+  position: absolute;
+  top: 15px;
+  left: 0;
+  right: 0;
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #333;
+}
+
+.avatar-margin {
+  margin-top: 60px;
+}
+
+.v-avatar {
+  margin: 0 auto;
+  border: 3px solid #f0f0f0;
 }
 </style>
