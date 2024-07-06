@@ -1,7 +1,5 @@
 <template>
     <v-container class="container">
-        
-
         <div class="login-wrapper">
             <div>
                 <div :style="{ marginBottom: login_flag ? '20px' : '10px' }">
@@ -145,6 +143,7 @@ export default {
 
 <style scoped>
 .container {
+    margin: 0;
     width: 100%;
     max-width: 100vw;
     height: 100%;
@@ -186,12 +185,10 @@ export default {
     border-radius: 20px;
     margin: auto;
 }
-
 .custom-link {
   color: white;
   text-decoration: none; /* 링크 밑줄 없애기 */
 }
-
 .login-wrapper > div > div:first-child {
     color: #fff;
     font-size: 25px;
@@ -199,7 +196,6 @@ export default {
     padding: 5px;
     margin: auto;
 }
-
 .login-wrapper > div > .login-error-box {
     background-color: rgba(39, 54, 108, 1);
     padding: 16px;
@@ -207,12 +203,10 @@ export default {
     border-radius: 10px;
     color: #fff;
 }
-
 .login-wrapper > div > .v-divider {
     margin-top: 8px;
     margin-bottom: 8px;
 }
-
 .login-wrapper > div > div:nth-last-child(3) {
     font-size: 12px;
     color: rgba(255, 255, 255, 0.6);
