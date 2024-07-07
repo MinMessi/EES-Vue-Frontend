@@ -26,7 +26,7 @@
       </v-card>
     </div>
     <div
-      v-if="isAuthenticated"
+      v-if="isAuthor"
       class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
       <v-btn 
         class="floating-button"
@@ -50,7 +50,7 @@
       </div>
     </div>
     <div
-      v-if="!isAuthenticated"
+      v-if="!isAuthor"
       class="floating-menu-container"
     >
       <v-btn 
@@ -89,6 +89,7 @@ import "@mdi/font/css/materialdesignicons.css";
 
 const reviewModule = "reviewModule";
 const authenticationModule = "authenticationModule";
+const accountModule = 'accountModule'
 
 export default {
   props: {
@@ -103,14 +104,22 @@ export default {
       showNextArrow: true,
       showDeleteDialog: false,
       showShareDialog: false,
+      currentUserNickname: '', // 현재 로그인한 사용자의 닉네임을 저장할 변수
     };
   },
   computed: {
     ...mapState("reviewModule", ["review"]),
     ...mapState("authenticationModule", ["isAuthenticated"]),
+    isAuthor() {
+      if (!this.review || !this.review.writer) {
+        return false;
+      }
+      return this.review.writer === this.currentUserNickname;
+    },
   },
   methods: {
     ...mapActions(reviewModule, ["requestReviewToDjango", "incrementReviewViewCount"]),
+    ...mapActions(accountModule, ['requestNicknameToDjango']),
     navigateToPrevious() {
       const previousId = Number(this.reviewId) + 1;
       if (previousId > 0) {
@@ -172,6 +181,7 @@ export default {
       this.showNextArrow = true;
     }
     await this.incrementReviewViewCount(this.reviewId);
+    this.currentUserNickname = await this.requestNicknameToDjango();
   },
   watch: {
     async reviewId(newId) {
