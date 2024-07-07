@@ -93,6 +93,7 @@ export default {
       this.writer = this.community.writer;
       this.content = this.community.content;
     }
+    history.replaceState(null, null, '/');
   },
 };
 </script>
