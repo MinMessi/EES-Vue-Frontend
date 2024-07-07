@@ -32,6 +32,7 @@
 import { mapActions, mapState } from "vuex";
 
 const communityModule = "communityModule";
+const accountModule = 'accountModule';
 
 export default {
   props: {
@@ -45,16 +46,19 @@ export default {
       title: "",
       writer: "",
       content: "",
+      currentUserNickname: "",
     };
   },
   computed: {
     ...mapState(communityModule, ["community"]),
+    ...mapState(accountModule, ["nickname"]),
   },
   methods: {
     ...mapActions(communityModule, [
       "requestCommunityToDjango",
       "requestModifyCommunityToDjango",
     ]),
+    ...mapActions(accountModule, ['requestNicknameToDjango']),
     async onModify() {
       const payload = {
         title: this.title,
@@ -77,12 +81,18 @@ export default {
         .slice(0, -1);
     },
   },
-  created() {
-    this.requestCommunityToDjango(this.communityId).then(() => {
+  async created() {
+    this.currentUserNickname = await this.requestNicknameToDjango();
+
+    await this.requestCommunityToDjango(this.communityId);
+    
+    if (this.community.writer !== this.currentUserNickname) {
+      this.$router.push({ name: 'HomeView' });
+    } else {
       this.title = this.community.title;
       this.writer = this.community.writer;
       this.content = this.community.content;
-    });
+    }
   },
 };
 </script>
