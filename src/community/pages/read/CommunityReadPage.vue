@@ -138,7 +138,6 @@ export default {
     this.showNextArrow = Number(this.communityId) !== 1;
 
     this.currentUserNickname = await this.requestNicknameToDjango();
-    history.replaceState(null, null, '/'); // 이 부분을 원하는 URL로 변경하세요.
   },
   watch: {
     async communityId(newId) {
