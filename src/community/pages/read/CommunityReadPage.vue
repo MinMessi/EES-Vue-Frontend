@@ -21,7 +21,7 @@
       <v-card-text class="card-text">{{ community.content }}</v-card-text>
     </v-card>
 
-    <div v-if="isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+    <div v-if="isAuthor" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
       <v-btn class="floating-button">
         <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
       </v-btn>
@@ -38,14 +38,12 @@
         </v-btn>
       </div>
     </div>
-    <div v-if="!isAuthenticated" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
+    <div v-if="!isAuthor" class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
       <v-btn class="floating-button" @click="$router.push({ name: 'CommunityListPage' })">
         <v-icon color="white">mdi-undo</v-icon>
       </v-btn>
     </div>
-    <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext"
-      >mdi-chevron-right</v-icon
-    >
+    <v-icon v-if="showNextArrow" class="right-arrow" @click="navigateToNext">mdi-chevron-right</v-icon>
 
     <v-dialog v-model="showDeleteDialog" max-width="500px">
       <v-card class="black-white-dialog">
@@ -65,6 +63,7 @@ import { mapActions, mapState } from "vuex";
 
 const communityModule = "communityModule";
 const authenticationModule = "authenticationModule";
+const accountModule = 'accountModule'
 
 export default {
   props: {
@@ -77,10 +76,17 @@ export default {
     menuOpen: false,
     showNextArrow: true,
     showDeleteDialog: false,
+    currentUserNickname: '',
   }),
   computed: {
     ...mapState("communityModule", ["community"]),
     ...mapState("authenticationModule", ["isAuthenticated"]),
+    isAuthor() {
+      if (!this.community || !this.community.writer) {
+        return false;
+      }
+      return this.community.writer === this.currentUserNickname;
+    },
   },
   methods: {
     ...mapActions("communityModule", [
@@ -88,6 +94,7 @@ export default {
       "requestDeleteCommunityToDjango",
       "incrementCommunityViewCount",
     ]),
+    ...mapActions(accountModule, ['requestNicknameToDjango']),
     async navigateToPrevious() {
       const previousId = Number(this.communityId) + 1;
       this.$router.push(`/community/read/${previousId}`);
@@ -129,6 +136,8 @@ export default {
     await this.requestCommunityToDjango(this.communityId);
     await this.incrementCommunityViewCount(this.communityId);
     this.showNextArrow = Number(this.communityId) !== 1;
+
+    this.currentUserNickname = await this.requestNicknameToDjango();
   },
   watch: {
     async communityId(newId) {
