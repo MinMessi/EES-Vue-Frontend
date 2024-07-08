@@ -10,6 +10,7 @@
                             <tr>
                                 <th>Select</th>
                                 <th>Product</th>
+                                <th>Size</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
@@ -22,6 +23,7 @@
                                     <v-checkbox v-model="selectedItems" :value="item"></v-checkbox>
                                 </td>
                                 <td>{{ item.productName }}</td>
+                                <td>{{ item.productSize }}</td>
                                 <td>{{ item.productPrice }}</td>
                                 <td>
                                     <v-text-field
@@ -107,9 +109,6 @@ export default {
     methods: {
         ...mapActions("cartModule", ["requestCartListToDjango"]),
         ...mapActions("orderModule", ["requestCreateOrderToDjango"]),
-        updateQuantity(item) {
-            // 수량 업데이트 로직
-        },
         removeItem(item) {
             this.cartItems = 
                 this.cartItems.filter(
@@ -148,6 +147,7 @@ export default {
         async fetchCartList() {
             try {
                 const response = await this.requestCartListToDjango();
+                console.log("Fetched cart list:", response);
                 this.cartItems = response;
             } catch (error) {
                 console.error("Error fetching cart list:", error);
