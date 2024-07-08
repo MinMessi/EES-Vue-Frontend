@@ -55,13 +55,13 @@
                                     color="black">
                                     <v-radio
                                         label="남성"
-                                        value="man"
+                                        value="MALE"
                                         color="cyan"
                                         base-color="white"
                                     ></v-radio>
                                     <v-radio
                                         label="여성"
-                                        value="woman"
+                                        value="FEMALE"
                                         color="pink"
                                         base-color="white"
                                     ></v-radio>
@@ -113,7 +113,7 @@ export default {
             ],
             nicknameRules: [v => !!v || 'Nickname은 필수입니다!'],
             // passwordRules: [v => !!v || 'Password는 필수입니다!'],
-            gender: "man",
+            gender: "MALE",
             birthyear: '',
             nicknameErrorMessage: [],
             isNicknameValid: false,
