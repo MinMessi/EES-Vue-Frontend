@@ -47,7 +47,7 @@
           <v-col cols="5" class="pa-3 text-center">
             <div class="subtitle-1 font-weight-medium">{{ item.title }}</div>
           </v-col>
-          <v-col cols="1" class="pa-3 text-left">
+          <v-col cols="1" class="pa-3 text-center">
             <div class="caption text--secondary">{{ item.writer }}</div>
           </v-col>
           <v-col cols="2" class="pa-3 text-center">
