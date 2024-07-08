@@ -11,6 +11,7 @@ export interface Product {
     productImage: string
     registeredDate: string
     updatedDate: string
+    viewCount: number
 }
 
 const state: ProductState = {

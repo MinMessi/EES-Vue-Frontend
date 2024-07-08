@@ -26,8 +26,8 @@ const actions: ProductActions = {
 
         try {
             const res: AxiosResponse<Product> = 
-                await axiosInst.djangoAxiosInst.get(`/product/read/${productId}`)
-
+            await axiosInst.djangoAxiosInst.get(`/product/read/${productId}`)
+            await context.dispatch('incrementProductViewCount', productId);
             context.commit(REQUEST_PRODUCT_TO_DJANGO, res.data)
         } catch (error) {
             console.error('requestProductToDjango() -> error:', error)
