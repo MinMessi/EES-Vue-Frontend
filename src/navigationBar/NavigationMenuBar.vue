@@ -146,7 +146,7 @@ export default {
       router.push("/cart/list");
     },
     goToOrder() {
-      router.push("/order");
+      router.push("/order/list");
     },
     goToMyPage() {
       router.push("/account/mypage");
