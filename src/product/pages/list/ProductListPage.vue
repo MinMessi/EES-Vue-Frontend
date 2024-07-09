@@ -106,6 +106,9 @@ export default {
                 params: { productId: productId }
             })
         },
+        goToCart() {
+      this.$router.push({ name: "CartListPage" });
+        },
         async loadCartItems() {
             try {
                 const response = await this.requestCartListToDjango();
