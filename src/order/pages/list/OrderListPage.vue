@@ -9,6 +9,7 @@
                             <thead>
                                 <tr>
                                     <th>주문 번호</th>
+                                    <th>주문 사이즈</th>
                                     <th>주문 일자</th>
                                     <th>주문 항목</th>
                                     <th>전체 주문 가격</th>
@@ -17,6 +18,7 @@
                             <tbody>
                                 <tr v-for="order in orderList" :key="order.orderId" @click="goToOrderReadPage(order.orderId)" style="cursor: pointer;">
                                     <td>{{ order.orderId }}</td>
+                                    <td>{{ order.orderSize }}</td>
                                     <td>{{ order.orderDate }}</td>
                                     <td>{{ truncateOrderName(order.orderName) }}</td>
                                     <td>{{ order.ordersItemTotalPrice }}</td>
