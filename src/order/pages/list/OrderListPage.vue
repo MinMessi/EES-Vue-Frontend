@@ -15,7 +15,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="order in orderList" :key="order.orderId">
+                                <tr v-for="order in orderList" :key="order.orderId" @click="goToOrderReadPage(order.orderId)" style="cursor: pointer;">
                                     <td>{{ order.orderId }}</td>
                                     <td>{{ order.orderDate }}</td>
                                     <td>{{ truncateOrderName(order.orderName) }}</td>
@@ -62,7 +62,7 @@ export default {
             await this.fetchOrderList();
             this.$router.push({ name: 'OrderListPage', query: { page } });
         },
-        goToOrderDetail(orderId) {
+        goToOrderReadPage(orderId) {
             this.$router.push({ name: 'OrderReadPage', params: { orderId }, query: { page: this.currentPageNumber } });
         },
         goToHome() {
