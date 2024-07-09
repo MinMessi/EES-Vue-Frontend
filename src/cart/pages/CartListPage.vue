@@ -107,15 +107,16 @@ export default {
         },
     },
     methods: {
-        ...mapActions("cartModule", ["requestCartListToDjango"]),
+        ...mapActions("cartModule", ["requestCartListToDjango", "requestRemoveCartItemToDjango"]),
         ...mapActions("orderModule", ["requestCreateOrderToDjango"]),
-        removeItem(item) {
-            this.cartItems = 
-                this.cartItems.filter(
-                    cartItem => cartItem.cartItemId !== item.cartItemId);
-            this.selectedItems = 
-                this.selectedItems.filter(
-                    selectedItem => selectedItem.cartItemId !== item.cartItemId);
+        async removeItem(item) {
+            try {
+                await this.requestRemoveCartItemToDjango({CartItemId: [item.cartItemId] });
+                this.cartItems = this.cartItems.filter(cartItem => cartItem.cartItemId !== item.cartItemId);
+                this.selectedItems = this.selectedItems.filter(selectedItem => selectedItem.cartItemId !== item.cartItemId);
+            } catch (error) {
+                console.error('Cart Item 삭제 중 에러 발생', error);
+            }
         },
         confirmCheckout() {
             this.isCheckoutDialogVisible = true;
@@ -124,9 +125,7 @@ export default {
             this.isCheckoutDialogVisible = false;
 
             try {
-                const selectedCartItems = 
-                    this.cartItems.filter(
-                        item => this.selectedItems.includes(item));
+                const selectedCartItems = this.cartItems.filter(item => this.selectedItems.includes(item));
                 const orderItems = selectedCartItems.map(item => ({
                     cartItemId: item.cartItemId,
                     orderPrice: item.productPrice,
