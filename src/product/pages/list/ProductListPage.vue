@@ -41,9 +41,17 @@
             </v-col>
         </v-row>
         <div v-if="isAuthenticated" class="floating-menu-container">
-        <v-btn class="floating-button" @click="$router.push({ name: 'CartListPage' })">
+            <v-btn class="floating-button" :class="{ bounce: isBouncing }" @click="goToCart">
             <v-icon color="white">mdi-cart</v-icon>
-        </v-btn>
+            <v-badge
+                v-if="totalQuantity > 0"
+                :content="totalQuantity.toString()"
+                color="red"
+                overlap
+                offset-x="-7"
+                offset-y="-23"
+            ></v-badge>
+            </v-btn>
         </div>
     </v-container>
 </template>
@@ -52,6 +60,7 @@
 import { mapActions, mapState } from 'vuex'
 const authenticationModule = "authenticationModule";
 const productModule = 'productModule'
+const cartModule = "cartModule";
 
 export default {
     components: {
@@ -60,6 +69,7 @@ export default {
     computed: {
         ...mapState(productModule, ['productList']),
         ...mapState(authenticationModule, ["isAuthenticated"]),
+        ...mapState(cartModule, ["cartItemList"]),
         pagedItems () {
             const startIdx = (this.pagination.page - 1) * this.perPage
             const endIdx = startIdx + this.perPage
@@ -80,9 +90,13 @@ export default {
         this.$store.state.authenticationModule.isAuthenticated = true;
         }
     },
+    async created() {
+        await this.loadCartItems();
+    },
     methods: {
         ...mapActions(productModule, ['requestProductListToDjango']),
         ...mapActions(authenticationModule, ["requestLogoutToDjango"]),
+        ...mapActions(cartModule, [ "requestCartListToDjango"]),
         getProductImageUrl (imageName) {
             return require('@/assets/images/uploadImages/' + imageName)
         },
@@ -91,6 +105,20 @@ export default {
                 name: 'ProductReadPage',
                 params: { productId: productId }
             })
+        },
+        async loadCartItems() {
+            try {
+                const response = await this.requestCartListToDjango();
+                let totalQuantity = 0;
+                response.forEach((item, index) => {
+                console.log(`Item ${index} quantity:`, item.quantity);
+                totalQuantity += item.quantity;
+                });
+                this.totalQuantity = totalQuantity;
+                console.log("Sum of all quantities:", totalQuantity);
+            } catch (error) {
+                console.error("Error loading cart items:", error);
+            }
         },
     },
     data () {
@@ -108,8 +136,9 @@ export default {
             perPage: 5,
             pagination: {
                 page: 1,
-            }
-        }
+            },
+            totalQuantity: 0,
+        };
     }
 }
 </script>

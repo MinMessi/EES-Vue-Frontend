@@ -89,10 +89,12 @@
     <v-btn class="floating-button" :class="{ bounce: isBouncing }" @click="goToCart">
       <v-icon color="white">mdi-cart</v-icon>
       <v-badge
-        v-if="cartItemList.length > 0"
-        :content="cartItemList.length.toString()"
+        v-if="totalQuantity > 0"
+        :content="totalQuantity.toString()"
         color="red"
         overlap
+        offset-x="-7"
+        offset-y="-23"
       ></v-badge>
     </v-btn>
   </div>
@@ -132,6 +134,7 @@ export default {
         "290",
       ],
       isBouncing: false,
+      totalQuantity: 0,
     };
   },
   computed: {
@@ -198,9 +201,13 @@ export default {
     async loadCartItems() {
       try {
         const response = await this.requestCartListToDjango();
-        console.log("Cart items loaded:", response);
-        this.cartItemList = response;
-        console.log("Total quantity in cart:", this.cartItemList.length);
+        let totalQuantity = 0;
+        response.forEach((item, index) => {
+          console.log(`Item ${index} quantity:`, item.quantity);
+          totalQuantity += item.quantity;
+        });
+        this.totalQuantity = totalQuantity;
+        console.log("Sum of all quantities:", totalQuantity);
       } catch (error) {
         console.error("Error loading cart items:", error);
       }
