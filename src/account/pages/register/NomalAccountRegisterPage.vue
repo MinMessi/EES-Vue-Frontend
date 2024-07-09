@@ -57,20 +57,18 @@
                                     color="black">
                                     <v-radio
                                         label="남성"
-                                        value="man"
+                                        value="MALE"
                                         color="cyan"
                                         base-color="white"
                                     ></v-radio>
                                     <v-radio
                                         label="여성"
-                                        value="woman"
+                                        value="FEMALE"
                                         color="pink"
                                         base-color="white"
                                     ></v-radio>
                                 </v-radio-group>
                             </div>
-
-                            
 
                         <v-text-field
                                 v-model="birthyear"
