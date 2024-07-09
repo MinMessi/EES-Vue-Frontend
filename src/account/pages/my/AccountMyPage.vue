@@ -13,9 +13,9 @@
         <v-row dense>
           <v-col cols="6">
             <v-icon>{{
-              gender === "man" ? "mdi-gender-male" : "mdi-gender-female"
+              gender === "MALE" ? "mdi-gender-male" : "mdi-gender-female"
             }}</v-icon>
-            <span class="ml-1">{{ gender === "man" ? "남성" : "여성" }}</span>
+            <span class="ml-1">{{ gender === "MALE" ? "남성" : "여성" }}</span>
           </v-col>
           <v-col cols="6">
             <v-icon>mdi-calendar</v-icon>
