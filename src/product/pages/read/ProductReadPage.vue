@@ -68,17 +68,6 @@
         <v-btn block x-large outlined class="mt-4" @click="onAddToCart" height="50">
           위시리스트 <v-icon right>mdi-heart-outline</v-icon>
         </v-btn>
-
-        <v-expansion-panels class="mt-6" flat>
-          <v-expansion-panel>
-            <v-expansion-panel-header>무료 픽업</v-expansion-panel-header>
-            <v-expansion-panel-content>
-              무료 픽업 관련 정보...
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-          <v-expansion-panel-header>매장 찾기</v-expansion-panel-header>
-          <v-expansion-panel-content> 매장 찾기 관련 정보... </v-expansion-panel-content>
-        </v-expansion-panels>
       </v-col>
     </v-row>
   </v-container>
