@@ -5,20 +5,23 @@
         <v-carousel v-if="hasProductImages" hide-delimiters height="500">
           <v-carousel-item v-for="(image, i) in productImages" :key="i">
             <!-- <v-img :src="getProductImageUrl(image)" height="500" contain> -->
-              <template v-slot:placeholder>
-                <v-row class="fill-height ma-0" align="center" justify="center">
-                  <v-progress-circular indeterminate color="grey lighten-5"/>
-                </v-row>
-              </template>
+            <v-img 
+            :src="getProductImageUrl(product.productImage)" 
+            height="500" contain />
+            <template v-slot:placeholder>
+              <v-row class="fill-height ma-0" align="center" justify="center">
+                <v-progress-circular indeterminate color="grey lighten-5" />
+              </v-row>
+            </template>
             <!-- </v-img> -->
           </v-carousel-item>
         </v-carousel>
-        <!-- <v-img v-else src="@/assets/images/default-product-image.jpg" height="500" contain> -->
-          <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="grey lighten-5"/>
-            </v-row>
-          </template>
+        <!-- <v-img v-else src="@/assets/images/uploadImages/image.png" height="500" contain/> -->
+        <template v-slot:placeholder>
+          <v-row class="fill-height ma-0" align="center" justify="center">
+            <v-progress-circular indeterminate color="grey lighten-5" />
+          </v-row>
+        </template>
         <!-- </v-img> -->
         <v-row v-if="hasProductImages" class="mt-2">
           <v-col v-for="(image, i) in productImages" :key="i" cols="2">
@@ -29,8 +32,10 @@
       <v-col cols="12" md="5">
         <h1 class="text-h4 font-weight-bold mb-2">{{ product.productName }}</h1>
         <p class="text-subtitle-1 mb-2">{{ product.productDescription }}</p>
-        <p class="text-h5 font-weight-bold mb-4">{{ product.productPrice.toLocaleString() }} 원</p>
-        
+        <p class="text-h5 font-weight-bold mb-4">
+          {{ product.productPrice.toLocaleString() }} 원
+        </p>
+
         <v-alert type="warning" class="mb-4" dense text icon="mdi-clock-fast">
           품절임박! 서둘러 주문하세요.
         </v-alert>
@@ -67,15 +72,8 @@
         >
           장바구니
         </v-btn>
-        
-        <v-btn
-          block
-          x-large
-          outlined
-          class="mt-4"
-          @click="onAddToCart"
-          height="50"
-        >
+
+        <v-btn block x-large outlined class="mt-4" @click="onAddToCart" height="50">
           위시리스트 <v-icon right>mdi-heart-outline</v-icon>
         </v-btn>
 
@@ -97,86 +95,95 @@
     </v-row>
   </v-container>
   <v-container v-else>
-    <v-alert type="info">
-      상품 정보를 불러오는 중입니다...
-    </v-alert>
+    <v-alert type="info"> 상품 정보를 불러오는 중입니다... </v-alert>
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapState } from "vuex";
 
-const productModule = 'productModule'
-const cartModule = 'cartModule'
+const productModule = "productModule";
+const cartModule = "cartModule";
 
 export default {
   props: {
     productId: {
       type: String,
       required: true,
-    }
+    },
   },
   data() {
     return {
       selectedSize: null,
-      sizes: ['240', '245', '250', '255', '260', '265', '270', '275', '280', '285', '290', '295', '300', '305', '310'],
-    //   productImages: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg'], // 예시 이미지 배열
-    }
+      sizes: [
+        "220",
+        "225",
+        "230",
+        "235",
+        "240",
+        "245",
+        "250",
+        "255",
+        "260",
+        "265",
+        "270",
+        "275",
+        "280",
+        "285",
+        "290",
+      ],
+      //   productImages: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg'], // 예시 이미지 배열
+    };
   },
   computed: {
-    ...mapState(productModule, ['product']),
+    ...mapState(productModule, ["product"]),
     hasProductImages() {
-      return this.product && this.product.productImage && this.product.productImage.length > 0;
+      return (
+        this.product && this.product.productImage && this.product.productImage.length > 0
+      );
     },
     productImages() {
       return this.hasProductImages ? this.product.productImage : [];
-    }
+    },
   },
   methods: {
-    ...mapActions(productModule, ['requestProductToDjango', 'incrementProductViewCount']),
-    ...mapActions(cartModule, ['requestAddCartToDjango']),
-    async onPurchase () {
-      console.log('장바구니 버튼 눌렀음')
+    ...mapActions(productModule, ["requestProductToDjango", "incrementProductViewCount"]),
+    ...mapActions(cartModule, ["requestAddCartToDjango"]),
+    async onPurchase() {
+      console.log("장바구니 버튼 눌렀음");
     },
-    async onAddToCart () {
-        console.log('장바구니에 추가 버튼 눌렀음')
-        try {
-            const cartData = {
-                productId: this.product.productId,
-                productName: this.product.productName,
-                productPrice: this.product.productPrice,
-                quantity: 1,
-                productSize: this.selectedSize, // 선택한 사이즈 추가
-            };
-            await this.requestAddCartToDjango(cartData);
-            this.$router.push({ name: 'CartListPage' });
-        } catch (error) {
-            console.log('장바구니 추가 과정에서 에러 발생:', error);
-        }
+    async onAddToCart() {
+      console.log("장바구니에 추가 버튼 눌렀음");
+      try {
+        const cartData = {
+          productId: this.product.productId,
+          productName: this.product.productName,
+          productPrice: this.product.productPrice,
+          quantity: 1,
+          productSize: this.selectedSize,
+        };
+        await this.requestAddCartToDjango(cartData);
+        this.$router.push({ name: "CartListPage" });
+      } catch (error) {
+        console.log("장바구니 추가 과정에서 에러 발생:", error);
+      }
     },
-    // getProductImageUrl(imageName) {
-    //   if (!imageName) {
-    //     return require('@/assets/images/default-product-image.jpg');
-    //   }
-    //   try {
-    //     return require(`@/assets/images/uploadImages/${imageName}`);
-    //   } catch (e) {
-    //     console.error(`Image not found: ${imageName}`);
-    //     return require('@/assets/images/fixed/login.png');
-    //   }
-    // },
+    getProductImageUrl(imageName) {
+      console.log("imageName:", imageName);
+      if (imageName) {
+        return require(`@/assets/images/uploadImages/${imageName}`);
+      }
+      return null;
+    },
     selectSize(size) {
-      this.selectedSize = size
+      this.selectedSize = size;
     },
-    selectImage(index) {
-      // 이미지 선택 로직 (필요시 구현)
-    }
   },
-  async created () {
-    await this.requestProductToDjango(this.productId)
-    await this.incrementProductViewCount(this.productId)
+  async created() {
+    await this.requestProductToDjango(this.productId);
+    await this.incrementProductViewCount(this.productId);
   },
-}
+};
 </script>
 
 <style scoped>
