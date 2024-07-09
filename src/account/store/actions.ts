@@ -50,8 +50,8 @@ const actions: AccountActions = {
     async requestNicknameToDjango(context: ActionContext<AccountState, any>, nickname: string): Promise<Account> {
         try {
             const userToken = localStorage.getItem("userToken");
-            const res: AxiosResponse<Account> = 
-            await axiosInst.djangoAxiosInst.post('/account/nickname',  { userToken: userToken } );
+            const res: AxiosResponse<Account> =
+                await axiosInst.djangoAxiosInst.post('/account/nickname', { userToken: userToken });
             console.log('data:', res.data)
             context.commit('REQUEST_NICKNAME_TO_DJANGO', res.data);
             return res.data
@@ -63,8 +63,8 @@ const actions: AccountActions = {
     async requestEmailToDjango(context: ActionContext<AccountState, any>, email: string): Promise<Account> {
         try {
             const userToken = localStorage.getItem("userToken");
-            const res: AxiosResponse<Account> = 
-            await axiosInst.djangoAxiosInst.post('/account/email',  { userToken: userToken } );
+            const res: AxiosResponse<Account> =
+                await axiosInst.djangoAxiosInst.post('/account/email', { userToken: userToken });
             console.log('data:', res.data)
             context.commit('REQUEST_EMAIL_TO_DJANGO', res.data);
             return res.data
@@ -73,12 +73,13 @@ const actions: AccountActions = {
             throw error
         }
     },
-    async requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: {reason: string}): Promise<AxiosResponse> {
+    async requestWithdrawalToDjango(context: ActionContext<AccountState, unknown>, payload: { reason: string }): Promise<AxiosResponse> {
         console.log('requestWithdrawalToDjango()')
+        const userToken = localStorage.getItem("userToken");
         const { reason } = payload
         console.log('전송할 데이터:', { reason })
         try {
-            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/account/withdraw', { reason })
+            const res: AxiosResponse = await axiosInst.djangoAxiosInst.post('/account/withdraw', { reason: reason, userToken: userToken })
             console.log('res:', res.data)
             return res.data
         } catch (error) {
@@ -89,8 +90,8 @@ const actions: AccountActions = {
     async requestGenderToDjango(context: ActionContext<AccountState, any>, birth: string): Promise<Account> {
         try {
             const userToken = localStorage.getItem("userToken");
-            const res: AxiosResponse<Account> = 
-            await axiosInst.djangoAxiosInst.post('/account/gender',  { userToken: userToken } );
+            const res: AxiosResponse<Account> =
+                await axiosInst.djangoAxiosInst.post('/account/gender', { userToken: userToken });
             console.log('data:', res.data)
             context.commit('REQUEST_GENDER_TO_DJANGO', res.data);
             return res.data
@@ -102,8 +103,8 @@ const actions: AccountActions = {
     async requestBirthyearToDjango(context: ActionContext<AccountState, any>, birthyear: string): Promise<Account> {
         try {
             const userToken = localStorage.getItem("userToken");
-            const res: AxiosResponse<Account> = 
-            await axiosInst.djangoAxiosInst.post('/account/birthyear',  { userToken: userToken } );
+            const res: AxiosResponse<Account> =
+                await axiosInst.djangoAxiosInst.post('/account/birthyear', { userToken: userToken });
             console.log('data:', res.data)
             context.commit('REQUEST_BIRTHYEAR_TO_DJANGO', res.data);
             return res.data
