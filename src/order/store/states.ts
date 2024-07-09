@@ -9,14 +9,16 @@ export interface Orders {
     orderId: number
     orderName: string
     orderDate: string
+    orderSize: number
     ordersItemTotalPrice: number
 }
 
 export interface OrderItem {
-    orderId: number;
-    cartItemId: number;
-    quantity: number;
-    price: number;
+    orderId: number
+    cartItemId: number
+    quantity: number
+    price: number
+    size: number
 }
 
 const state: OrderState = {

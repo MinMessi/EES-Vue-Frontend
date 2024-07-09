@@ -9,6 +9,7 @@
                             <thead>
                             <tr>
                                 <th>Product Name</th>
+                                <th>Size</th>
                                 <th>Price</th>
                                 <th>Quantity</th>
                                 <th>Total</th>
@@ -17,6 +18,7 @@
                             <tbody>
                                 <tr v-for="item in order.order_items" :key="item.productId">
                                     <td>{{ item.product_name }}</td>
+                                    <td>{{ item.size }}</td>
                                     <td>{{ item.price }}</td>
                                     <td>{{ item.quantity }}</td>
                                     <td>{{ item.price * item.quantity }}</td>
@@ -67,6 +69,7 @@ export default {
             return this.order.order_items.reduce(
                 (total, item) => { 
                     console.log('item.price:', item.price)
+                    console.log('item.size:', item.size)
                     console.log('item.quantity:', item.quantity)
                     const newTotal = total + item.price * item.quantity
                     console.log('total:', total)

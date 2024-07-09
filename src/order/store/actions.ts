@@ -11,7 +11,8 @@ export type OrderActions = {
             items: {
                 cartItemId: number;
                 quantity: number;
-                orderPrice: number
+                orderPrice: number;
+                size: number;
             }[]
         }
     ): Promise<AxiosResponse>;
@@ -32,27 +33,34 @@ export type OrderActions = {
 }
 
 const actions: OrderActions = {
-    async requestCreateOrderToDjango({ state }, payload) {
+async requestCreateOrderToDjango({ state }, payload) {
         try {
             const userToken = localStorage.getItem('userToken');
             if (!userToken) {
                 throw new Error('User token not found');
             }
 
-            console.log('payload:', payload)
+            console.log('payload:', payload);
 
             const requestData = {
                 userToken,
-                items: payload.items.map(item => ({
-                    cartItemId: item.cartItemId,
-                    quantity: item.quantity,
-                    orderPrice: item.orderPrice
-                }))
+                items: payload.items.map(item => {
+                    console.log('cartItemId:', item.cartItemId);
+                    console.log('quantity:', item.quantity);
+                    console.log('orderPrice:', item.orderPrice);
+                    console.log('size:', item.size);
+                    return {
+                        cartItemId: item.cartItemId,
+                        quantity: item.quantity,
+                        orderPrice: item.orderPrice,
+                        size: item.size
+                    };
+                })
             };
 
             const response =
                 await axiosInst.djangoAxiosInst.post('/orders/create', requestData);
-            console.log('response data:', response.data)
+            console.log('response data:', response.data);
 
             return response.data;
         } catch (error) {

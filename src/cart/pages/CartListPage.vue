@@ -130,7 +130,8 @@ export default {
                 const orderItems = selectedCartItems.map(item => ({
                     cartItemId: item.cartItemId,
                     orderPrice: item.productPrice,
-                    quantity: item.quantity
+                    quantity: item.quantity,
+                    size: item.productSize,
                 }));
                 console.log('orderItems:', orderItems)
                 const orderId = await this.requestCreateOrderToDjango({ items: orderItems });
