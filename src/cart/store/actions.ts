@@ -1,5 +1,5 @@
 import { ActionContext } from "vuex"
-import {CartItem, CartState} from "./states"
+import { CartItem, CartState } from "./states"
 import { AxiosResponse } from "axios"
 import axiosInst from "@/utility/axiosInstance"
 import { REQUEST_CART_LIST_TO_DJANGO } from "./mutation-types"
@@ -13,6 +13,11 @@ export type CartActions = {
     requestCartListToDjango(
         context: ActionContext<CartState, any>
     ): Promise<AxiosResponse>;
+
+    requestRemoveCartItemToDjango(
+        context: ActionContext<CartState, any>,
+        cartItemId: number[]
+    ): Promise<void>
 }
 
 const actions: CartActions = {
@@ -57,6 +62,15 @@ const actions: CartActions = {
             throw error;
         }
     },
+    async requestRemoveCartItemToDjango(context: ActionContext<CartState, any>, cartItemId: number[]): Promise<void> {
+        try {
+            await axiosInst.djangoAxiosInst.delete('/cart/remove', { data: cartItemId })
+            console.log('requestRemoveCartItemToDjango()')
+        } catch (error) {
+            console.log('requestRemoveCartItemToDjango() 과정에서 문제 발생')
+            throw error
+        }
+    }
 };
 
 export default actions;
