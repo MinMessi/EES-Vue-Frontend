@@ -4,29 +4,21 @@
       <v-col cols="12" md="7">
         <v-carousel v-if="hasProductImages" hide-delimiters height="500">
           <v-carousel-item v-for="(image, i) in productImages" :key="i">
-            <!-- <v-img :src="getProductImageUrl(image)" height="500" contain> -->
-            <v-img 
-            :src="getProductImageUrl(product.productImage)" 
-            height="500" contain />
+            <v-img :src="getProductImageUrl(product.productImage)" height="500" contain />
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
                 <v-progress-circular indeterminate color="grey lighten-5" />
               </v-row>
             </template>
-            <!-- </v-img> -->
           </v-carousel-item>
         </v-carousel>
-        <!-- <v-img v-else src="@/assets/images/uploadImages/image.png" height="500" contain/> -->
         <template v-slot:placeholder>
           <v-row class="fill-height ma-0" align="center" justify="center">
             <v-progress-circular indeterminate color="grey lighten-5" />
           </v-row>
         </template>
-        <!-- </v-img> -->
         <v-row v-if="hasProductImages" class="mt-2">
-          <v-col v-for="(image, i) in productImages" :key="i" cols="2">
-            <!-- <v-img :src="getProductImageUrl(image)" height="50" contain @click="selectImage(i)"></v-img> -->
-          </v-col>
+          <v-col v-for="(image, i) in productImages" :key="i" cols="2"> </v-col>
         </v-row>
       </v-col>
       <v-col cols="12" md="5">
@@ -52,7 +44,7 @@
           <v-col v-for="size in sizes" :key="size" cols="3" sm="2">
             <v-btn
               outlined
-              :color="selectedSize === size ? 'primary' : ''"
+              :color="selectedSize === size ? '#FB8C00' : ''"
               @click="selectSize(size)"
               block
               class="size-btn"
@@ -84,12 +76,8 @@
               무료 픽업 관련 정보...
             </v-expansion-panel-content>
           </v-expansion-panel>
-          <v-expansion-panel>
-            <v-expansion-panel-header>매장 찾기</v-expansion-panel-header>
-            <v-expansion-panel-content>
-              매장 찾기 관련 정보...
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+          <v-expansion-panel-header>매장 찾기</v-expansion-panel-header>
+          <v-expansion-panel-content> 매장 찾기 관련 정보... </v-expansion-panel-content>
         </v-expansion-panels>
       </v-col>
     </v-row>
@@ -97,11 +85,22 @@
   <v-container v-else>
     <v-alert type="info"> 상품 정보를 불러오는 중입니다... </v-alert>
   </v-container>
+  <div v-if="isAuthenticated" class="floating-menu-container">
+    <v-btn class="floating-button" :class="{ bounce: isBouncing }" @click="goToCart">
+      <v-icon color="white">mdi-cart</v-icon>
+      <v-badge
+        v-if="cartItemList.length > 0"
+        :content="cartItemList.length.toString()"
+        color="red"
+        overlap
+      ></v-badge>
+    </v-btn>
+  </div>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
-
+const authenticationModule = "authenticationModule";
 const productModule = "productModule";
 const cartModule = "cartModule";
 
@@ -132,11 +131,13 @@ export default {
         "285",
         "290",
       ],
-      //   productImages: ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.jpg', 'image5.jpg'], // 예시 이미지 배열
+      isBouncing: false,
     };
   },
   computed: {
     ...mapState(productModule, ["product"]),
+    ...mapState(authenticationModule, ["isAuthenticated"]),
+    ...mapState(cartModule, ["cartItemList"]),
     hasProductImages() {
       return (
         this.product && this.product.productImage && this.product.productImage.length > 0
@@ -146,9 +147,15 @@ export default {
       return this.hasProductImages ? this.product.productImage : [];
     },
   },
+  async created() {
+    await this.requestProductToDjango(this.productId);
+    await this.incrementProductViewCount(this.productId);
+    await this.loadCartItems();
+  },
+
   methods: {
     ...mapActions(productModule, ["requestProductToDjango", "incrementProductViewCount"]),
-    ...mapActions(cartModule, ["requestAddCartToDjango"]),
+    ...mapActions(cartModule, ["requestAddCartToDjango", "requestCartListToDjango"]),
     async onPurchase() {
       console.log("장바구니 버튼 눌렀음");
     },
@@ -163,10 +170,20 @@ export default {
           productSize: this.selectedSize,
         };
         await this.requestAddCartToDjango(cartData);
-        this.$router.push({ name: "CartListPage" });
+        await this.loadCartItems();
+        this.bounceCartIcon();
       } catch (error) {
         console.log("장바구니 추가 과정에서 에러 발생:", error);
       }
+    },
+    bounceCartIcon() {
+      this.isBouncing = true;
+      setTimeout(() => {
+        this.isBouncing = false;
+      }, 1000);
+    },
+    goToCart() {
+      this.$router.push({ name: "CartListPage" });
     },
     getProductImageUrl(imageName) {
       console.log("imageName:", imageName);
@@ -178,10 +195,16 @@ export default {
     selectSize(size) {
       this.selectedSize = size;
     },
-  },
-  async created() {
-    await this.requestProductToDjango(this.productId);
-    await this.incrementProductViewCount(this.productId);
+    async loadCartItems() {
+      try {
+        const response = await this.requestCartListToDjango();
+        console.log("Cart items loaded:", response);
+        this.cartItemList = response;
+        console.log("Total quantity in cart:", this.cartItemList.length);
+      } catch (error) {
+        console.error("Error loading cart items:", error);
+      }
+    },
   },
 };
 </script>
@@ -194,5 +217,49 @@ export default {
   min-width: 0;
   width: 100%;
   height: 40px;
+}
+
+.floating-menu-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-end;
+}
+
+.floating-button {
+  background-color: #000;
+  color: #fff;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  margin-right: 13px;
+}
+
+.floating-button:hover {
+  background-color: #333;
+}
+
+.floating-menu {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+@keyframes doubleBounce {
+  0%,
+  50%,
+  100% {
+    transform: translateY(0);
+  }
+  25%,
+  75% {
+    transform: translateY(-50px);
+  }
+}
+
+.bounce {
+  animation: doubleBounce 1s ease;
 }
 </style>
