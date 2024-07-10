@@ -1,123 +1,118 @@
 <template>
-  <v-container>
-    <v-row v-if="!isAuthenticated">
-      <v-col cols="12">
-        <v-card outlined class="mb-6 pa-4">
-          <h2 class="text-h6 orange--text">멤버에게 제공되는 무료 배송 서비스</h2>
-          <p class="text-body-2 mb-0">
-            IT,SHOE 멤버가 되어 무료배송 서비스를 비롯한 다양한 혜택을 누려보세요.
-            <a href="#" class="font-weight-bold" @click.prevent="goToRegister"
-              >가입하기</a
-            >
-            또는
-            <a href="#" class="font-weight-bold" @click.prevent="goToLogin">로그인</a>
-          </p>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-row>
-      <v-col cols="12" md="8">
-        <h3 class="text-h5 mb-4">장바구니</h3>
-        <v-card v-for="item in cartItems" :key="item.cartItemId" class="mb-6" outlined>
-          <v-row no-gutters>
-            <v-col cols="4">
-              <v-img :src="item.productImage" height="200" contain></v-img>
-            </v-col>
-            <v-col cols="8" class="pa-4">
-              <div class="d-flex justify-space-between align-start">
-                <div>
-                  <h4 class="text-h6">{{ item.productName }}</h4>
-                  <p class="text-body-2 grey--text">{{ item.productDescription }}</p>
-                  <p class="text-body-2">{{ item.productColor }}</p>
-                  <p class="text-body-2">사이즈: {{ item.productSize }}</p>
-                </div>
-                <div class="text-right">
-                  <p class="text-h6">{{ item.productPrice.toLocaleString() }} 원</p>
-                </div>
-              </div>
-              <div class="d-flex justify-space-between align-center mt-4">
-                <v-select
-                  v-model="item.quantity"
-                  :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
-                  label="수량"
-                  dense
-                  outlined
-                  hide-details
-                  class="flex-grow-0"
-                  style="max-width: 100px"
-                ></v-select>
-                <div>
-                  <v-btn icon small class="mr-2">
-                    <v-icon>mdi-heart-outline</v-icon>
-                  </v-btn>
-                  <v-btn icon small @click="removeItem(item)">
-                    <v-icon>mdi-delete</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card>
-
-        <v-card outlined class="pa-4 mb-4">
-          <h4 class="text-h6 mb-2">무료 배송</h4>
-          <p class="text-body-2 mb-0">도착 예정일: {{ deliveryDate }}</p>
-        </v-card>
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <v-card outlined class="pa-4">
-          <h3 class="text-h6 mb-4">주문 내역</h3>
-          <v-expansion-panels flat>
-            <v-expansion-panel>
-              <v-expansion-panel-header class="px-0">
-                프로모션 코드가 있으신가요?
-              </v-expansion-panel-header>
-              <v-expansion-panel-content class="px-0">
-                <v-text-field label="프로모션 코드 입력" outlined dense></v-text-field>
-              </v-expansion-panel-content>
-            </v-expansion-panel>
-          </v-expansion-panels>
-
-          <v-divider class="my-4"></v-divider>
-
-          <div class="d-flex justify-space-between mb-2">
-            <span>상품 금액</span>
-            <span>{{ cartTotal.toLocaleString() }} 원</span>
-          </div>
-          <div class="d-flex justify-space-between mb-2">
-            <span>배송비</span>
-            <span v-if="!isAuthenticated">{{ deliveryPrice }} 원</span>
-            <span v-if="isAuthenticated">무료</span>
-          </div>
-          <div class="d-flex justify-space-between text-h6 font-weight-bold mt-4">
-            <span>총 결제 금액</span>
-            <span v-if="!isAuthenticated">{{ totalPayment.toLocaleString() }} 원</span>
-            <span v-if="isAuthenticated">{{ cartTotal.toLocaleString() }} 원</span>
-          </div>
-
-          <v-btn color="black" dark block x-large class="mt-6" @click="confirmCheckout">
-            주문결제
-          </v-btn>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <v-dialog v-model="isCheckoutDialogVisible" max-width="500">
-      <v-card>
-        <v-card-title>주문 확인</v-card-title>
-        <v-card-text> 선택한 상품을 주문하시겠습니까? </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="isCheckoutDialogVisible = false"
-            >취소</v-btn
-          >
-          <v-btn color="blue darken-1" text @click="proceedToOrder">확인</v-btn>
-        </v-card-actions>
+<v-container>
+  <v-row v-if="!isAuthenticated">
+    <v-col cols="12">
+      <v-card outlined class="mb-6 pa-4">
+        <h2 class="text-h6 orange--text">멤버에게 제공되는 무료 배송 서비스</h2>
+        <p class="text-body-2 mb-0">
+          IT,SHOE 멤버가 되어 무료배송 서비스를 비롯한 다양한 혜택을 누려보세요.
+          <a href="#" class="font-weight-bold" @click.prevent="goToRegister">가입하기</a>
+          또는
+          <a href="#" class="font-weight-bold" @click.prevent="goToLogin">로그인</a>
+        </p>
       </v-card>
-    </v-dialog>
-  </v-container>
+    </v-col>
+  </v-row>
+
+  <v-row>
+    <v-col cols="12" md="8">
+      <v-card v-for="item in cartItems" :key="item.cartItemId" class="mb-6" outlined>
+        <v-row no-gutters>
+          <v-col cols="4">
+            <v-img :src="getProductImage(item.productName)" contain></v-img>
+          </v-col>
+          <v-col cols="8" class="pa-4">
+            <div class="d-flex justify-space-between align-start">
+              <div>
+                <h4 class="text-h6">{{ item.productName }}</h4>
+                <p class="text-body-2 grey--text">{{ item.productDescription }}</p>
+                <p class="text-body-2">{{ item.productColor }}</p>
+                <p class="text-body-2">사이즈: {{ item.productSize }}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-h6">{{ item.productPrice.toLocaleString() }} 원</p>
+              </div>
+            </div>
+            <div class="d-flex justify-space-between align-center mt-4">
+              <v-select
+                v-model="item.quantity"
+                :items="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]"
+                label="수량"
+                dense
+                outlined
+                hide-details
+                class="flex-grow-0"
+                style="max-width: 100px"
+              ></v-select>
+              <div>
+                <v-btn icon small class="mr-2">
+                  <v-icon>mdi-heart-outline</v-icon>
+                </v-btn>
+                <v-btn icon small @click="removeItem(item)">
+                  <v-icon>mdi-delete</v-icon>
+                </v-btn>
+              </div>
+            </div>
+          </v-col>
+        </v-row>
+      </v-card>
+
+      <v-card outlined class="pa-4 mb-4">
+        <h4 class="text-h6 mb-2">무료 배송</h4>
+        <p class="text-body-2 mb-0">도착 예정일: {{ deliveryDate }}</p>
+      </v-card>
+    </v-col>
+
+    <v-col cols="12" md="4">
+      <v-card outlined class="pa-4">
+        <h3 class="text-h6 mb-4">주문 내역</h3>
+        <v-expansion-panels flat>
+          <v-expansion-panel>
+            <v-expansion-panel-header class="px-0">
+              프로모션 코드가 있으신가요?
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="px-0">
+              <v-text-field label="프로모션 코드 입력" outlined dense></v-text-field>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+
+        <v-divider class="my-4"></v-divider>
+
+        <div class="d-flex justify-space-between mb-2">
+          <span>상품 금액</span>
+          <span>{{ cartTotal.toLocaleString() }} 원</span>
+        </div>
+        <div class="d-flex justify-space-between mb-2">
+          <span>배송비</span>
+          <span v-if="!isAuthenticated">{{ deliveryPrice }} 원</span>
+          <span v-if="isAuthenticated">무료</span>
+        </div>
+        <div class="d-flex justify-space-between text-h6 font-weight-bold mt-4">
+          <span>총 결제 금액</span>
+          <span v-if="!isAuthenticated">{{ totalPayment.toLocaleString() }} 원</span>
+          <span v-if="isAuthenticated">{{ cartTotal.toLocaleString() }} 원</span>
+        </div>
+
+        <v-btn color="black" dark block x-large class="mt-6" @click="confirmCheckout">
+          주문결제
+        </v-btn>
+      </v-card>
+    </v-col>
+  </v-row>
+
+  <v-dialog v-model="isCheckoutDialogVisible" max-width="500">
+    <v-card>
+      <v-card-title>주문 확인</v-card-title>
+      <v-card-text> 선택한 상품을 주문하시겠습니까? </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" text @click="isCheckoutDialogVisible = false">취소</v-btn>
+        <v-btn color="blue darken-1" text @click="proceedToOrder">확인</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+</v-container>
 </template>
 
 <script>
@@ -153,14 +148,15 @@ export default {
       });
     },
   },
-
   methods: {
     ...mapActions("cartModule", [
       "requestCartListToDjango",
       "requestRemoveCartItemToDjango",
     ]),
     ...mapActions("orderModule", ["requestCreateOrderToDjango"]),
-
+    getProductImage(productName) {
+      return require(`@/assets/images/uploadImages/${productName}.png`);
+    },
     async removeItem(item) {
       try {
         await this.requestRemoveCartItemToDjango({ CartItemId: [item.cartItemId] });

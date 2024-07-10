@@ -7,7 +7,7 @@
             <v-img :src="getProductImageUrl(product.productImage)" height="500" contain />
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular indeterminate color="grey lighten-5"/>
+                <v-progress-circular indeterminate color="grey lighten-5" />
               </v-row>
             </template>
           </v-carousel-item>
@@ -26,7 +26,7 @@
         <h1 class="text-h4 font-weight-bold mb-2">{{ product.productName }}</h1>
         <p class="text-subtitle-1 mb-2">{{ product.productDescription }}</p>
         <p class="text-h5 font-weight-bold mb-4">
-          {{ product.productPrice.toLocaleString() }} 원
+          {{ formatPrice(product.productPrice) }} 원
         </p>
 
         <v-alert type="warning" class="mb-4" dense text icon="mdi-clock-fast">
@@ -202,6 +202,9 @@ export default {
       } catch (error) {
         console.error("Error loading cart items:", error);
       }
+    },
+    formatPrice(value) {
+      return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     },
   },
 };

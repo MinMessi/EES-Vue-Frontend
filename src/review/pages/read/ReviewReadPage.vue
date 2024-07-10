@@ -3,7 +3,7 @@
     <div class="navigation-container">
       <v-icon class="left-arrow" @click="navigateToPrevious">mdi-chevron-left</v-icon>
       <v-card v-if="review" class="question-card">
-        <v-card-title class="title-section">
+        <v-card-title class="title-section" style="text-align: center;">
           {{ review.title }}
         </v-card-title>
         <v-card-subtitle class="subtitle-section">
