@@ -2,8 +2,8 @@
     <v-container class="container">
         <div class="login-wrapper">
             <div>
-                <div :style="{ marginBottom: login_flag ? '20px' : '10px' }">
-                        Log-in
+                <div :style="{ marginBottom: login_flag ? '20px' : '10px', textAlign: 'center'}">
+                        LOGIN
                 </div>
 
                 <div v-if="login_flag == false" class="login-error-box">
@@ -43,27 +43,23 @@
                         <v-btn
                             width="100%"
                             color="white"
-                            size="large"
-                            :disabled="!form"
                             :loading="loading"
                             type="submit"
                             variant="elevated"
                             block
+                            style="font-size: 13px;"
                         >
                             로그인
                         </v-btn>
                     </v-form>
                 </v-responsive>
-                <v-btn color="purple darken-2" class="black--text mt-2" block @click="goToNomalAccountRegisterPage">
+                <v-btn color="purple darken-2" class="black--text mt-2" block @click="goToNomalAccountRegisterPage" style="font-size: 13px;">
                     <router-link :to="{ name: 'NomalAccountRegisterPage' }" class="custom-link">
-                        <v-icon small class="ml-2">mdi-account-plus</v-icon>
                             <span class="option-text"> 회원가입 </span>
                     </router-link>
                 </v-btn>
 
-                <v-divider :thickness="2" color="#fff"></v-divider>
-
-                <div>다른 방법으로 로그인하기</div>
+                <v-divider :thickness="3" style="margin-top: 20px; margin-bottom: 20px;"></v-divider>
                 
 
                 <v-btn color="#FEE500" class="black--text mt-2 kakao-login-btn" block @click="goToKakaoLogin">
@@ -115,13 +111,11 @@ export default {
 
             this.loading = true;
 
-            // 회원정보 일치하는지 확인하는 작업 필요함
-            // 회원정보 일치하면
             setTimeout(
                 () => ((this.loading = false), (this.login_flag = true)),
                 2000
             );
-            // 회원정보 일치하지않으면
+
             setTimeout(
                 () => ((this.loading = false), (this.login_flag = false)),
                 2000
@@ -187,7 +181,7 @@ export default {
 }
 .custom-link {
   color: white;
-  text-decoration: none; /* 링크 밑줄 없애기 */
+  text-decoration: none;
 }
 .login-wrapper > div > div:first-child {
     color: #fff;
@@ -209,7 +203,6 @@ export default {
 }
 .login-wrapper > div > div:nth-last-child(3) {
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
     margin-bottom: 8px;
 }
 
