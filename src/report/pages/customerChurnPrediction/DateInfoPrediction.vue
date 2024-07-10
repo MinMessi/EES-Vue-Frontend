@@ -43,28 +43,30 @@ import * as d3 from "d3";
 export default {
     data() {
         return {
-            nDays: 0,
+            nDays: 30, // Set default value to 30
             result: null,
             trainResult: null,
             error: null,
             loading: false,
+            chartTitle: '', // Added chartTitle to the data
         };
     },
     methods: {
         async trainModel() {
-            this.executePostRequest("/train-date-info");
+            this.executePostRequest("/train-date-info", {}, null, "모델 학습 완료");
         },
         async predictTotalUser() {
             const data = { n_days: this.nDays };
-            this.executePostRequest("/predict-total-user", data, "predicted_total_user");
+            this.executePostRequest("/predict-total-user", data, "predicted_total_user", `${this.nDays}일간의 총 가입자 수 예측량`);
         },
         async predictProfit() {
             const data = { n_days: this.nDays };
-            this.executePostRequest("/predict-profit", data, "predicted_profit");
+            this.executePostRequest("/predict-profit", data, "predicted_profit", `${this.nDays}일간 일별 수익 예측량`);
         },
-        async executePostRequest(url, data = {}, resultKey = null) {
+        async executePostRequest(url, data = {}, resultKey = null, title = '') {
             this.resetState();
             this.loading = true;
+            this.chartTitle = title; // Set the chart title
             try {
                 const response = await axiosInstance.fastapiAxiosInst.post(url, data, {
                     timeout: 60000,
@@ -92,7 +94,7 @@ export default {
                 return;
             }
 
-            const margin = { top: 30, right: 30, bottom: 40, left: 50 };
+            const margin = { top: 30, right: 30, bottom: 60, left: 70 }; // Increased bottom and left margins
             const width = 600 - margin.left - margin.right;
             const height = 400 - margin.top - margin.bottom;
 
@@ -107,6 +109,15 @@ export default {
                 .append("g")
                 .attr("transform", `translate(${margin.left},${margin.top})`);
 
+            // Add title to the chart
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", 0 - margin.top / 2)
+                .attr("text-anchor", "middle")
+                .style("font-size", "16px")
+                .style("font-weight", "bold")
+                .text(this.chartTitle);
+
             const today = new Date();
 
             // Create an array of dates starting from today
@@ -115,13 +126,14 @@ export default {
 
             const x = d3.scaleBand()
                 .range([0, width])
-                .domain(dates);
+                .domain(dates)
+                .padding(0.1); // Added padding to ensure ticks are properly spaced
 
             const y = d3.scaleLinear().range([height, 0]);
 
             const line = d3
                 .line()
-                .x((d, i) => x(dates[i]))
+                .x((d, i) => x(dates[i]) + x.bandwidth() / 2) // Adjusted to center the points
                 .y((d) => y(d));
 
             y.domain([d3.min(this.result) - (d3.max(this.result) - d3.min(this.result)) * 0.1, d3.max(this.result)]);
@@ -154,26 +166,68 @@ export default {
                 .attr("stroke-width", 2)
                 .attr("d", line);
 
-            // Add points and labels only at tick positions
-            tickIndices.forEach(i => {
-                svg
-                    .append("circle")
-                    .attr("class", "dot")
-                    .attr("cx", x(dates[i]))
-                    .attr("cy", y(this.result[i]))
-                    .attr("r", 5)
-                    .attr("fill", "green");
+            const focus = svg.append("g")
+                .attr("class", "focus")
+                .style("display", "none");
 
-                svg
-                    .append("text")
-                    .attr("class", "label")
-                    .attr("x", x(dates[i]))
-                    .attr("y", y(this.result[i]) - 10)
-                    .attr("text-anchor", "middle")
-                    .attr("fill", "green")
-                    .text(this.result[i]);
-            });
+            focus.append("circle")
+                .attr("r", 5)
+                .attr("fill", "green");
+
+            const infoBox = focus.append("g")
+                .attr("class", "infoBox");
+
+            infoBox.append("rect")
+                .attr("width", 150)
+                .attr("height", 50)
+                .attr("rx", 10)
+                .attr("ry", 10)
+                .attr("fill", "rgba(255, 255, 255, 0.8)")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1);
+
+            const infoText = infoBox.append("text")
+                .attr("x", 75) // Centering text horizontally
+                .attr("y", 25) // Centering text vertically
+                .attr("fill", "black")
+                .style("font-size", "12px")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle");
+
+            svg.append("rect")
+                .attr("class", "overlay")
+                .attr("width", width)
+                .attr("height", height)
+                .style("fill", "none")
+                .style("pointer-events", "all")
+                .on("mouseover", () => {
+                    focus.style("display", null);
+                    infoBox.style("display", null);
+                })
+                .on("mouseout", () => {
+                    focus.style("display", "none");
+                    infoBox.style("display", "none");
+                })
+                .on("mousemove", (event) => this.mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate));
+
+            const bisectDate = d3.bisector((d, i) => dates[i]).left;
         },
+        mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate) {
+            const [x0] = d3.pointer(event);
+            const dateIndex = Math.floor(x0 / x.step());
+            const date = dates[dateIndex];
+            const value = this.result[dateIndex];
+            if (dateIndex >= 0 && dateIndex < dates.length) {
+                focus.attr("transform", `translate(${x(date) + x.bandwidth() / 2},${y(value)})`);
+                infoText.text(`${formatDate(date)}: ${value}`);
+                infoBox.attr("transform", `translate(${x(date) + x.bandwidth() / 2 + 10},${y(value) - 25})`);
+            }
+        },
+        getChartTitle() {
+            return this.$route.path.includes("profit") 
+                ? `${this.nDays}일간 일별 수익 예측량` 
+                : `${this.nDays}일간의 총 가입자 수 예측량`;
+        }
     },
 };
 </script>
@@ -194,5 +248,17 @@ export default {
 
 .v-alert {
     margin-bottom: 1rem;
+}
+
+.infoBox rect {
+    filter: url(#drop-shadow);
+}
+
+svg {
+    font-family: Arial, sans-serif;
+}
+
+.infoBox text {
+    font-size: 12px;
 }
 </style>
