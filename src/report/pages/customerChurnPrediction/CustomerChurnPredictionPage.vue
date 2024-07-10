@@ -1,45 +1,57 @@
 <template>
-  <v-container>
-    <div class="title-section">
-      <text>회원 이탈 예측</text>
-    </div>
+  <v-container class="membership-prediction">
+    <h1 class="title">회원 이탈 예측</h1>
 
-    <div><h1>🗓️</h1></div>
+    <v-card class="mt-6 pa-6">
+      <v-icon size="48" color="primary" class="mb-4">mdi-calendar</v-icon>
 
-    <div>
-      <h3>날짜 데이터를 통한 이탈 정보 예측</h3>
-      
-      <div>
-        <label for="days">예측할 일 수 : (오늘부터) </label>
-        <input v-model.number="nDays" id="days" type="number" style="background-color:lightgrey; border: 2px solid black;"/>일
+      <h2 class="subtitle-1 font-weight-bold mb-4">날짜 데이터를 통한 이탈 정보 예측</h2>
+
+      <v-text-field
+        v-model.number="nDays"
+        label="예측할 일 수 (오늘부터)"
+        type="number"
+        outlined
+        dense
+        append-outer-icon="mdi-calendar-range"
+      ></v-text-field>
+
+      <v-row class="mt-4">
+        <v-col cols="12" sm="4">
+          <v-btn block color="primary" @click="trainModel" :loading="loading">
+            <v-icon left>mdi-brain</v-icon>
+            모델 학습
+          </v-btn>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <v-btn block color="success" @click="predictTotalUser" :loading="loading">
+            <v-icon left>mdi-account-group</v-icon>
+            총 사용자 예측
+          </v-btn>
+        </v-col>
+        <v-col cols="12" sm="4">
+          <v-btn block color="warning" @click="predictProfit" :loading="loading">
+            <v-icon left>mdi-cash</v-icon>
+            수익 예측
+          </v-btn>
+        </v-col>
+      </v-row>
+
+      <v-divider class="my-6"></v-divider>
+
+      <div v-if="trainResult || result || error">
+        <h3 class="subtitle-1 font-weight-bold mb-2">결과:</h3>
+        <v-alert v-if="trainResult" type="info" dense outlined>{{ trainResult }}</v-alert>
+        <v-alert v-if="error" type="error" dense outlined>{{ error }}</v-alert>
+        <div v-if="result" ref="chart" class="chart-container"></div>
       </div>
-
-      <div class="button-container">
-        <button class="btn train" @click="trainModel">모델 학습</button>
-        <button class="btn predict" @click="predictTotalUser">총 사용자 예측</button>
-        <button class="btn profit" @click="predictProfit">수익 예측</button>
-      </div>
-
-      <h3>모델학습 결과 : </h3>
-      <div v-if="trainResult">        
-        <p>{{ trainResult }}</p>
-      </div>
-
-      <h3>예측 결과 : </h3>
-      <div v-if="result">        
-        <p>{{ result }}</p>
-      </div>
-
-      <h3>오류 : </h3>  
-      <div v-if="error">
-        <p>{{ error }}</p>
-      </div>
-    </div>
+    </v-card>
   </v-container>
 </template>
 
 <script>
 import axiosInstance from "@/utility/axiosInstance";
+import * as d3 from "d3";
 
 export default {
   data() {
@@ -48,108 +60,128 @@ export default {
       result: null,
       trainResult: null,
       error: null,
+      loading: false,
     };
   },
   methods: {
     async trainModel() {
-      this.trainResult = null;
-      this.error = null;
-      try {
-        const response = await axiosInstance.fastapiAxiosInst.post('/train-date-info', {}, {
-          timeout: 60000,
-        });
-        this.trainResult = response.data.message;
-      } catch (err) {
-        this.error = err.response ? err.response.data.error : err.message;
-      }
+      this.executeRequest("/train-date-info");
     },
     async predictTotalUser() {
-      this.result = null;
-      this.error = null;
-      if (this.nDays > 0) {
-        try {
-          const params = new URLSearchParams();
-          params.append('n_days', this.nDays);
-          const response = await axiosInstance.fastapiAxiosInst.get(`/predict-total-user?${params.toString()}`, {
-            timeout: 60000,
-          });
-          this.result = response.data.predicted_total_user;
-        } catch (err) {
-          this.error = err.response ? err.response.data.error : err.message;
-        }
-      } else {
-        this.error = "올바른 일 수를 입력하세요.";
-      }
+      this.executeRequest(
+        `/predict-total-user?n_days=${this.nDays}`,
+        "predicted_total_user"
+      );
     },
     async predictProfit() {
-      this.result = null;
-      this.error = null;
-      if (this.nDays > 0) {
-        try {
-          const params = new URLSearchParams();
-          params.append('n_days', this.nDays);
-          const response = await axiosInstance.fastapiAxiosInst.get(`/predict-profit?${params.toString()}`, {
-            timeout: 60000,
-          });
-          this.result = response.data.predicted_profit;
-        } catch (err) {
-          this.error = err.response ? err.response.data.error : err.message;
-        }
-      } else {
+      this.executeRequest(`/predict-profit?n_days=${this.nDays}`, "predicted_profit");
+    },
+    async executeRequest(url, resultKey = null) {
+      this.resetState();
+      if (this.nDays <= 0 && resultKey) {
         this.error = "올바른 일 수를 입력하세요.";
+        return;
       }
+      this.loading = true;
+      try {
+        const response = await axiosInstance.fastapiAxiosInst.get(url, {
+          timeout: 60000,
+        });
+        if (resultKey) {
+          this.result = response.data[resultKey];
+          this.$nextTick(() => this.drawChart());
+        } else {
+          this.trainResult = response.data.message;
+        }
+      } catch (err) {
+        this.error = err.response ? err.response.data.error : err.message;
+      } finally {
+        this.loading = false;
+      }
+    },
+    resetState() {
+      this.result = null;
+      this.trainResult = null;
+      this.error = null;
+    },
+    drawChart() {
+      const margin = { top: 30, right: 30, bottom: 40, left: 50 };
+      const width = 600 - margin.left - margin.right;
+      const height = 400 - margin.top - margin.bottom;
+
+      // Clear previous chart
+      d3.select(this.$refs.chart).selectAll("*").remove();
+
+      const svg = d3
+        .select(this.$refs.chart)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleLinear().range([0, width]);
+      const y = d3.scaleLinear().range([height, 0]);
+
+      const line = d3
+        .line()
+        .x((d, i) => x(i))
+        .y((d) => y(d));
+
+      x.domain([0, this.result.length - 1]);
+      y.domain([0, d3.max(this.result)]);
+
+      svg.append("g").attr("transform", `translate(0,${height})`).call(d3.axisBottom(x));
+
+      svg.append("g").call(d3.axisLeft(y));
+
+      svg
+        .append("path")
+        .datum(this.result)
+        .attr("fill", "none")
+        .attr("stroke", "#038C7F")
+        .attr("stroke-width", 2)
+        .attr("d", line);
+
+      svg
+        .selectAll(".dot")
+        .data(this.result)
+        .enter()
+        .append("circle")
+        .attr("class", "dot")
+        .attr("cx", (d, i) => x(i))
+        .attr("cy", (d) => y(d))
+        .attr("r", 5)
+        .attr("fill", "green");
+
+      svg
+        .selectAll(".label")
+        .data(this.result)
+        .enter()
+        .append("text")
+        .attr("class", "label")
+        .attr("x", (d, i) => x(i))
+        .attr("y", (d) => y(d) - 10)
+        .attr("text-anchor", "middle")
+        .attr("fill", "green")
+        .text((d) => d);
     },
   },
 };
 </script>
 
-<style>
-.title-section {
-  padding: 16px;
-  font-weight: bold;
-  font-size: 1.5rem;
-  text-align: left;
-  background-color: #fafafa;
-  border-bottom: 1px solid #eeeeee;
+<style scoped>
+.membership-prediction {
+  max-width: 800px;
+  margin: 0 auto;
 }
-
-.button-container {
-  margin-top: 20px;
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
 }
-
-.btn {
-  padding: 10px 20px;
-  margin: 5px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn.train {
-  background-color: #007bff;
-}
-
-.btn.train:hover {
-  background-color: #0056b3;
-}
-
-.btn.predict {
-  background-color: #28a745;
-}
-
-.btn.predict:hover {
-  background-color: #218838;
-}
-
-.btn.profit {
-  background-color: #ffc107;
-}
-
-.btn.profit:hover {
-  background-color: #e0a800;
+.chart-container {
+  width: 100%;
+  height: 400px;
 }
 </style>
