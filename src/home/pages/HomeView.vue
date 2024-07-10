@@ -16,10 +16,22 @@
         <button class="goToCommunity-button" @click="goToCommunityList">
           커뮤니티 이동하기
         </button>
-        <button class="goToReview-button" @click="goToReviewList">
-          별점 리뷰 달기
-        </button>
+        <button class="goToReview-button" @click="goToReviewList">별점 리뷰 달기</button>
       </div>
+    </div>
+
+    <div class="footer-container">
+      <p class="company-info">
+        법인명(상호): 주식회사 잇슈잇슈 대표자(성명): 윤서팍 사업자 등록번호 안내:
+        [123-41241-3]
+      </p>
+      <p class="contact-info">
+        통신판매업 신고 제 2019-플레이데이터-072호 주소: 서울특별시 금천구 가산디지털1로
+        25 플레이데이터18층<br />
+        이메일: issueissue@kakao.com 전화: 02-iiii-tttt 입금계좌: 우리은행
+        3123-6243-029458 (주)잇슈컴퍼니
+      </p>
+      <p class="privacy-info">개인정보보호책임자: 잇슈컴퍼니(issueissue@kakao.com)</p>
     </div>
   </div>
 </template>
@@ -27,8 +39,7 @@
 <script>
 import { defineComponent } from "vue";
 import imageSrc from "@/assets/images/homeImages/image1.jpg";
-import * as d3 from "d3";
-
+import KakaoTalk from "@/assets/images/fixed/KakaoTalk.png";
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 const authenticationModule = "authenticationModule";
@@ -116,17 +127,28 @@ export default defineComponent({
   background-color: rgba(191, 255, 0, 0.781);
 }
 
-/* .charts-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px 300px 20px 300px;  
-  background-color: rgba(109, 109, 109, 0.091);
-  border-radius: 10px;
+.footer-container {
+  text-align: left;
+  margin-top: 50px;
+  padding: 20px;
+  background-color: #f9f9f9;
 }
 
-.chart {
+.company-info,
+.contact-info,
+.privacy-info,
+.additional-links {
+  margin: 10px 0;
+  color: #555;
+}
+
+.social-media {
+  margin-top: 20px;
+}
+
+.social-icon {
+  width: 30px;
+  height: 30px;
   margin: 0 10px;
-  font: white;
-} */
+}
 </style>
