@@ -2,42 +2,35 @@
   <v-app-bar color="black" app dark height="64">
     <v-toolbar-title class="navbar-title">
       <v-btn text @click="goToHome" class="navbar-title-btn">
-        <v-icon class="mdi-icon" left>mdi-shoe-sneaker</v-icon>
         <span> IT, SHOE</span>
       </v-btn>
     </v-toolbar-title>
     <v-spacer></v-spacer>
 
     <v-btn text @click="goToProductList" class="btn-text">
-      <!-- <span class="mdi mdi-shoe-formal"></span> -->
-      <span>👟PRODUCTS</span>
+      <span>PRODUCTS</span>
     </v-btn>
 
     <v-btn text @click="goToCommunityList" class="btn-text">
-      <!-- <span class="mdi mdi-account-group-outline"></span> -->
-      <span>👨‍👩‍👧‍👦COMMUNITY</span>
+      <span>COMMUNITY</span>
     </v-btn>
 
     <v-btn text @click="goToReviewList" class="btn-text">
-      <!-- <span class="mdi mdi-star-box"></span> -->
-      <span>⭐REVIEW</span>
+      <span>REVIEW</span>
     </v-btn>
 
     <v-btn v-if="isAuthenticated" text @click="goToCart" class="btn-text">
-      <!-- <span class="mdi mdi-cart-outline"></span> -->
-      <span>🛒Cart</span>
+      <span>Cart</span>
     </v-btn>
 
     <v-btn v-if="isAuthenticated" text @click="goToOrder" class="btn-text">
-      <!-- <v-icon left>mdi-receipt</v-icon> -->
-      <span>💵Order</span>
+      <span>Order</span>
     </v-btn>
 
     <v-menu close-on-content-click>
       <template v-slot:activator="{ props }">
         <v-btn v-bind="props" class="btn-text">
-          <!-- <span class="mdi mdi-file-chart"></span> -->
-          <b>📊Report</b>
+          <b>Report</b>
         </v-btn>
       </template>
       <v-list>
@@ -53,8 +46,7 @@
 
     <v-menu v-if="isAuthenticated" close-on-content-click>
       <template v-slot:activator="{ props }">
-        <v-btn v-bind="props" class="btn-text">
-          <v-icon left>mdi-account</v-icon>
+        <v-btn v-bind="props" class="btn-text" style="margin-right: 16px">
           <b>My Page</b>
         </v-btn>
       </template>
@@ -101,13 +93,13 @@ export default {
       ],
       myPageItems: [
         {
-          title: "👤MY PAGE",
+          title: "MY PAGE",
           action: () => {
             this.goToMyPage();
           },
         },
         {
-          title: "🔚LOGOUT",
+          title: "LOGOUT",
           action: () => {
             this.signOut();
           },
@@ -182,14 +174,13 @@ export default {
 
 .mdi-icon {
   font-size: 32px;
-  /* 아이콘 크기 설정 */
   margin-right: 8px;
 }
 
 .btn-text {
   font-size: 14px;
   margin-right: 16px;
-  color: rgb(83, 83, 83);
+  color: white;
 }
 
 .v-btn {
@@ -197,7 +188,7 @@ export default {
 }
 
 .v-btn:hover {
-  background-color: rgba(170, 255, 0, 0.233); /* 마우스오버시 hover 효과 */
+  background-color: rgba(170, 255, 0, 0.233);
 }
 
 .v-btn:hover .btn-text {
@@ -213,15 +204,14 @@ export default {
   color: white;
 }
 
-/* 드롭다운 메뉴 스타일 */
 .v-menu > .v-overlay__content > .v-card,
 .v-menu > .v-overlay__content > .v-sheet,
 .v-menu > .v-overlay__content > .v-list {
-  background-color: #0000008a; /* 투명한 검은색 배경 */
+  background-color: #0000008a;
   color: white;
 }
 
 .v-list-item:hover {
-  background-color: rgba(170, 255, 0, 0.233); /* 마우스오버시 배경 색상 */
+  background-color: rgba(170, 255, 0, 0.233);
 }
 </style>
