@@ -16,7 +16,6 @@
 
   <v-row>
     <v-col cols="12" md="8">
-      <h3 class="text-h5 mb-4">장바구니</h3>
       <v-card v-for="item in cartItems" :key="item.cartItemId" class="mb-6" outlined>
         <v-row no-gutters>
           <v-col cols="4">
