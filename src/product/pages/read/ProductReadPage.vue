@@ -1,13 +1,13 @@
 <template>
   <v-container v-if="product">
     <v-row>
-      <v-col cols="12" md="7">
+      <v-col cols="12" md="6">
         <v-carousel v-if="hasProductImages" hide-delimiters height="500">
           <v-carousel-item v-for="(image, i) in productImages" :key="i">
             <v-img :src="getProductImageUrl(product.productImage)" height="500" contain />
             <template v-slot:placeholder>
               <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular indeterminate color="grey lighten-5" />
+                <v-progress-circular indeterminate color="grey lighten-5"/>
               </v-row>
             </template>
           </v-carousel-item>
@@ -21,6 +21,7 @@
           <v-col v-for="(image, i) in productImages" :key="i" cols="2"> </v-col>
         </v-row>
       </v-col>
+      <v-col cols="12" md="1"> </v-col>
       <v-col cols="12" md="5">
         <h1 class="text-h4 font-weight-bold mb-2">{{ product.productName }}</h1>
         <p class="text-subtitle-1 mb-2">{{ product.productDescription }}</p>
@@ -71,6 +72,7 @@
       </v-col>
     </v-row>
   </v-container>
+
   <v-container v-else>
     <v-alert type="info"> 상품 정보를 불러오는 중입니다... </v-alert>
   </v-container>
