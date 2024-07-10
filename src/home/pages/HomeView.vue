@@ -3,11 +3,13 @@
     <img :src="imageSrc" alt="Home Image" class="home-image" />
 
     <div class="text-container">
-      <p class="subtitle">나이키 페가수스 41</p>
-      <h2 class="title">에너지를 낭비하지 마세요</h2>
+      <h2 class="title">"We make positive movement in Korean running culture."</h2>
+      <div style="margin-top: 60px; margin-bottom: 20px"></div>
+      <p class="subtitle">SINCE 2024</p>
+      <div style="margin-bottom: 10px"></div>
       <p class="description">
-        페가수스를 신고 달려 보세요.<br />에어 줌이 선사하는 탁월한 에너지 반환력과 완전히
-        새롭게 태어난 리액트X 폼을 직접 느껴 보세요.
+        잇슈는 양질의 컨텐츠로 러닝의 즐거움과 감동을 <br />
+        보다 많은 사람들과 공유할 수 있도록 최선을 다 할 것입니다.
       </p>
       <div class="buttons">
         <button class="goToProduct-button" @click="goToProductList">
@@ -39,7 +41,6 @@
 <script>
 import { defineComponent } from "vue";
 import imageSrc from "@/assets/images/homeImages/image1.jpg";
-import KakaoTalk from "@/assets/images/fixed/KakaoTalk.png";
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 const authenticationModule = "authenticationModule";
@@ -88,12 +89,12 @@ export default defineComponent({
 }
 
 .subtitle {
-  font-size: 18px;
-  color: #555;
+  font-size: 35px;
+  font-weight: bold;
 }
 
 .title {
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   margin: 10px 0;
 }
@@ -124,7 +125,7 @@ export default defineComponent({
 .goToProduct-button:hover,
 .goToCommunity-button:hover,
 .goToReview-button:hover {
-  background-color: rgba(191, 255, 0, 0.781);
+  background-color: rgba(87, 133, 57, 0.908);
 }
 
 .footer-container {
