@@ -39,7 +39,6 @@
 <script>
 import { defineComponent } from "vue";
 import imageSrc from "@/assets/images/homeImages/image1.jpg";
-import KakaoTalk from "@/assets/images/fixed/KakaoTalk.png";
 import router from "@/router";
 import { mapActions, mapState } from "vuex";
 const authenticationModule = "authenticationModule";
