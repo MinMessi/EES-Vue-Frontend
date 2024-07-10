@@ -9,6 +9,7 @@ import CartRoutes from "@/cart/router/CartRoutes"
 import OrderRoutes from '@/order/router/OrderRoutes'
 import CommunityRoutes from '@/community/router/CommunityRoutes'
 import ReportRoutes from '@/report/router/ReportRoutes'
+import D3PlotRoutes from '@/d3plot/router/D3PlotRoutes'
 
 
 const routes: Array<RouteRecordRaw> = [
@@ -21,6 +22,7 @@ const routes: Array<RouteRecordRaw> = [
   ...CartRoutes,
   ...OrderRoutes,
   ...ReportRoutes,
+  ...D3PlotRoutes,
 ]
 
 const router = createRouter({
