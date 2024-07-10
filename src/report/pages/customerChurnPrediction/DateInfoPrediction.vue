@@ -208,19 +208,28 @@ export default {
                     focus.style("display", "none");
                     infoBox.style("display", "none");
                 })
-                .on("mousemove", (event) => this.mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate));
+                .on("mousemove", (event) => this.mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate, width, height));
 
             const bisectDate = d3.bisector((d, i) => dates[i]).left;
         },
-        mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate) {
+        mousemove(event, dates, x, y, focus, infoBox, infoText, formatDate, width, height) {
             const [x0] = d3.pointer(event);
             const dateIndex = Math.floor(x0 / x.step());
             const date = dates[dateIndex];
             const value = this.result[dateIndex];
             if (dateIndex >= 0 && dateIndex < dates.length) {
-                focus.attr("transform", `translate(${x(date) + x.bandwidth() / 2},${y(value)})`);
+                const focusX = x(date) + x.bandwidth() / 2;
+                const focusY = y(value);
+                focus.attr("transform", `translate(${focusX},${focusY})`);
                 infoText.text(`${formatDate(date)}: ${value}`);
-                infoBox.attr("transform", `translate(${x(date) + x.bandwidth() / 2 + 10},${y(value) - 25})`);
+                // Adjust infoBox position to ensure it fits within the chart area
+                let infoBoxX = focusX - 75;
+                let infoBoxY = focusY - 60;
+                if (infoBoxX < 0) infoBoxX = 0;
+                if (infoBoxY < 0) infoBoxY = 0;
+                if (infoBoxX + 150 > width) infoBoxX = width - 150;
+                if (infoBoxY + 50 > height) infoBoxY = height - 50;
+                infoBox.attr("transform", `translate(${infoBoxX},${infoBoxY})`);
             }
         },
         getChartTitle() {
