@@ -30,10 +30,11 @@
       <p class="contact-info">
         통신판매업 신고 제 2019-플레이데이터-072호 주소: 서울특별시 금천구 가산디지털1로
         25 플레이데이터18층<br />
-        이메일: issueissue@kakao.com 전화: 02-iiii-tttt 입금계좌: 우리은행
+        이메일: issueissue@kakao.com 전화: 02-1234-5678 입금계좌: 우리은행
         3123-6243-029458 (주)잇슈컴퍼니
       </p>
       <p class="privacy-info">개인정보보호책임자: 잇슈컴퍼니(issueissue@kakao.com)</p>
+      <p class="reserved-info">2024 IssueIssue Korea LLC. All Rights Reserved.</p>
     </div>
   </div>
 </template>
@@ -132,7 +133,12 @@ export default defineComponent({
   text-align: left;
   margin-top: 50px;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #000000;
+}
+
+.footer-container p {
+  color: #9b9b9b;
+  font-size: 13px;
 }
 
 .company-info,
