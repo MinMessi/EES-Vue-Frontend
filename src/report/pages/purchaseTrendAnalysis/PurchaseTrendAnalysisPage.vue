@@ -3,30 +3,38 @@
     <div class="title-section">
       <text>런닝화 구매 동향 분석</text>
     </div>
-    <h2>전체 사용자 성비</h2>
-    <v-img
-      src="@/assets/images/fixed/1.png"
-      class="grey lighten-2"
-      height="500"
-      weight="500"
-    />
-    <h2 style="margin-top: 10%">총 구매량</h2>
-    <v-img
-      src="@/assets/images/fixed/2.png"
-      class="grey lighten-2"
-      height="500"
-      weight="500"
-    />
-    <h2 style="margin-top: 10%">상품 판매량</h2>
+    
+    <v-row class="chart-row" style="margin-bottom: 5%">
+        <v-col cols="6">
+        <h2>전체 사용자 남녀비율</h2>
+        <v-img
+        src="@/assets/images/fixed/1.png"
+        class="grey lighten-2"
+        height="500"
+        weight="500"
+        />
+        </v-col>
+        <v-col cols="6">
+            <h2>남녀별 판매량</h2>
+            <v-img
+            src="@/assets/images/fixed/2.png"
+            class="grey lighten-2"
+            height="500"
+            weight="500"
+            />
+        </v-col>
+    </v-row>    
+    
+    <h2>상품별 판매량</h2>
     <v-img
       src="@/assets/images/fixed/3.png"
       class="grey lighten-2"
       height="500"
-      weight="500"
+      weight="2500"
     />
     <hr />
     <v-row class="chart-row" style="margin-bottom: 5%">
-      <v-col cols="6">
+      <v-col cols="12">
         <timeseries-chart></timeseries-chart>
       </v-col>
     </v-row>
