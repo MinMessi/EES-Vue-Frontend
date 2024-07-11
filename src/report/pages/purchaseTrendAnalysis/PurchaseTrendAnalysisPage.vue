@@ -26,7 +26,7 @@
     />
     <hr />
     <v-row class="chart-row" style="margin-bottom: 5%">
-      <v-col cols="6">
+      <v-col cols="12">
         <timeseries-chart></timeseries-chart>
       </v-col>
     </v-row>

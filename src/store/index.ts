@@ -8,6 +8,7 @@ import orderModule from "@/order/store/orderModule";
 import accountModule from '@/account/store/accountModule'
 import communityModule from '@/community/store/communityModule'
 
+
 export default createStore({
   state: {
   },
