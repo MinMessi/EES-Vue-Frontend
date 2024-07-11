@@ -79,13 +79,13 @@ export default {
     return {
       reportItems: [
         {
-          title: "구매 동향 분석",
+          title: "구매 동향",
           action: () => {
             this.goToPurchaseTrendAnalysisPage();
           },
         },
         {
-          title: "회원 이탈 예측",
+          title: "관리자",
           action: () => {
             this.goToCustomerChurnPredictionPage();
           },
