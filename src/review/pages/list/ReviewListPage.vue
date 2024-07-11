@@ -88,7 +88,7 @@ export default {
   data() {
     return {
       search: "",
-      sortOptions: ["최신순", "오래된순", "평점 높은 순"],
+      sortOptions: ["최신순", "오래된순", "평점 높은 순", "조회수 높은 순"],
       selectedSort: "최신순",
     };
   },
@@ -109,6 +109,8 @@ export default {
         sorted.sort((a, b) => new Date(a.regDate) - new Date(b.regDate));
       } else if (this.selectedSort === "평점 높은 순") {
         sorted.sort((a, b) => b.rating - a.rating);
+      } else if (this.selectedSort === "조회수 높은 순") {
+        sorted.sort((a, b) => b.viewCount - a.viewCount);
       }
       return sorted;
     },
