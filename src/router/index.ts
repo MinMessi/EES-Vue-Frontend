@@ -6,9 +6,13 @@ import AccountRoutes from '@/account/router/AccountRoutes'
 import AuthenticationRoutes from '@/authentication/router/AuthenticationRoutes'
 import ProductRoutes from '@/product/router/ProductRoutes'
 import CartRoutes from "@/cart/router/CartRoutes"
+
 import OrderRoutes from '@/order/router/OrderRoutes'
 import CommunityRoutes from '@/community/router/CommunityRoutes'
 import ReportRoutes from '@/report/router/ReportRoutes'
+
+
+
 import D3PlotRoutes from '@/d3plot/router/D3PlotRoutes'
 
 
@@ -19,11 +23,13 @@ const routes: Array<RouteRecordRaw> = [
   ...AuthenticationRoutes,
   ...ProductRoutes,
   ...CommunityRoutes,
-  ...CartRoutes,
-  ...OrderRoutes,
-  ...ReportRoutes,
-  ...D3PlotRoutes,
+  ...CartRoutes,  ...OrderRoutes,
+  ...ReportRoutes,  
+ ...D3PlotRoutes,
 ]
+
+  
+
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
