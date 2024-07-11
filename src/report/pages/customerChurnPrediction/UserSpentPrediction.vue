@@ -5,26 +5,17 @@
                 <v-card class="pa-4" outlined>
                     <v-icon size="48" color="primary" class="mb-4">mdi-cash</v-icon>
                     <h2 class="subtitle-1 font-weight-bold mb-4">사용자 지출 예측</h2>
-                    <v-select
-                        v-model="form.gender"
-                        :items="genderOptions"
-                        label="성별"
-                        outlined
-                        dense
-                    ></v-select>
-                    <v-text-field v-model.number="form.birth_year" label="출생 연도" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.num_logins" label="로그인 횟수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.average_login_interval" label="평균 로그인 간격" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.days_from_last_login" label="마지막 로그인 후 일수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.member_maintenance" label="멤버 유지" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.num_orders" label="주문 횟수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="form.average_order_interval" label="평균 주문 간격" type="number" outlined dense></v-text-field>
+                    <v-text-field v-model.number="accountId" label="계정 ID" type="number" outlined dense></v-text-field>
+                    <v-btn block color="info" class="mt-2" @click="fetchUserInfo" :loading="loading">
+                        <v-icon left>mdi-account-search</v-icon>
+                        사용자 정보 불러오기
+                    </v-btn>
                     <v-divider class="my-4"></v-divider>
-                    <v-btn block color="primary" @click="trainModel" :loading="loading">
+                    <v-btn block color="primary" @click="trainModel" :loading="loading" :disabled="!form.gender">
                         <v-icon left>mdi-brain</v-icon>
                         모델 학습
                     </v-btn>
-                    <v-btn block color="success" class="mt-2" @click="predictSpent" :loading="loading">
+                    <v-btn block color="success" class="mt-2" @click="predictSpent" :loading="loading" :disabled="!form.gender">
                         <v-icon left>mdi-cash-usd</v-icon>
                         지출 예측
                     </v-btn>
@@ -52,6 +43,7 @@ import axiosInstance from "@/utility/axiosInstance";
 export default {
     data() {
         return {
+            accountId: null,
             form: {
                 gender: '',
                 birth_year: null,
@@ -70,23 +62,43 @@ export default {
         };
     },
     methods: {
+        async fetchUserInfo() {
+            this.resetState();
+            this.loading = true;
+            try {
+                const response = await axiosInstance.fastapiAxiosInst.post("/user-info", { account_id: this.accountId }, {
+                    timeout: 60000,
+                });
+                console.log("User info response:", response.data); // Debugging
+                Object.assign(this.form, response.data);
+                console.log("Form object after fetching info:", this.form); // Debugging
+            } catch (err) {
+                this.error = err.response ? err.response.data.error : err.message;
+            } finally {
+                this.loading = false;
+            }
+        },
         async trainModel() {
-            this.executePostRequest("/train-user-spent");
+            const data = JSON.parse(JSON.stringify(this.form)); // Convert Proxy to regular object
+            this.executePostRequest("/train-user-spent", data, null, "모델 학습 완료");
         },
         async predictSpent() {
-            this.executePostRequest("/predict-user-spent", this.form, "expected_spent");
+            const data = JSON.parse(JSON.stringify(this.form)); // Convert Proxy to regular object
+            console.log("Data being sent to predict:", JSON.stringify(data)); // Debugging
+            this.executePostRequest("/predict-user-spent", data, "expected_spent");
         },
-        async executePostRequest(url, data = {}, resultKey = null) {
+        async executePostRequest(url, data = {}, resultKey = null, successMessage = null) {
             this.resetState();
             this.loading = true;
             try {
                 const response = await axiosInstance.fastapiAxiosInst.post(url, data, {
                     timeout: 60000,
                 });
+                console.log("Response from server:", response.data); // Debugging
                 if (resultKey) {
                     this.result = response.data;
-                } else {
-                    this.trainResult = response.data.message;
+                } else if (successMessage) {
+                    this.trainResult = successMessage;
                 }
             } catch (err) {
                 this.error = err.response ? err.response.data.error : err.message;
