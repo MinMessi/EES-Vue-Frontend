@@ -1,96 +1,147 @@
 <template>
-<div>
-    <h3>회귀 분석 결과</h3>
-    <button @click="trainModel" style="background-color:lightgrey; border: 2px solid black; margin-right: 10px;">회귀 모델 훈련</button>
-    <button @click="getRegressionData" style="background-color:lightgrey; border: 2px solid black;">그래프 그리기</button>
-    <div id="bar-chart"></div>
-</div>
+    <v-container class="chart-container">
+        <h2>Logistic Regression Chart</h2>
+        <p>Accuracy: {{ accuracy }}</p>
+        <div ref="chartContainer" class="chart-wrapper">
+            <svg ref="svg" :viewBox="`0 0 ${svgWidth} ${svgHeight}`" preserveAspectRatio="xMidYMid meet"/>
+        </div>
+    </v-container>
 </template>
 
 <script>
-import axiosInstance from '@/utility/axiosInstance';
-import * as d3 from 'd3';
+import axiosInstance from "@/utility/axiosInstance"
+// npm install d3 --legacy-peer-deps
+import * as d3 from 'd3'
 
 export default {
-data() {
-    return {
-    chartData: null
-    };
-},
-methods: {
-    async trainModel() {
-    try {
-        await axiosInstance.fastapiAxiosInst.post('/train-regression');
-        alert('회귀 모델 훈련이 완료되었습니다.');
-    } catch (error) {
-        console.error('Error training regression model:', error);
-        alert('모델 훈련 중 오류가 발생했습니다.');
-    }
+    data () {
+        return {
+            accuracy: 0,
+            X: [],
+            y: [],
+            x_values: [],
+            y_values: [],
+            svgWidth: 0,
+            svgHeight: 0,
+            margin: { top: 20, right: 50, bottom: 50, left: 50 },
+            resizeTimer: null,
+        }
     },
-    async getRegressionData() {
-    try {
-        const requestData = [
-        { user_age: 30, user_gender: 1, date_info: 10 },
-        { user_age: 25, user_gender: 0, date_info: 5 }
-        ];
-        const response = await axiosInstance.fastapiAxiosInst.post('/regression-predict', requestData);
-        this.chartData = response.data.predictions;
-        this.renderChart();
-    } catch (error) {
-        console.error('Error fetching regression data:', error);
-    }
+    mounted () {
+        this.fetchLogisticRegressionData()
+        window.addEventListener('resize', this.handleResize)
     },
-    renderChart() {
-    const data = this.chartData;
-    const svg = d3.select("#bar-chart").append("svg")
-        .attr("width", 600)
-        .attr("height", 400);
+    beforeUnmount () {
+        window.removeEventListener('resize', this.handleResize)
+    },
+    methods: {
+        async fetchLogisticRegressionData () {
+            try {
+                const response = await axiosInstance.fastapiAxiosInst.get('/logistic-regression')
+                const data = response.data
+                console.log('result:', data)
 
-    const margin = { top: 20, right: 20, bottom: 30, left: 40 };
-    const width = +svg.attr("width") - margin.left - margin.right;
-    const height = +svg.attr("height") - margin.top - margin.bottom;
-    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+                this.accuracy = data.accuracy
+                this.X = data.data_point.X
+                this.y = data.data_point.y
+                this.x_values = data.decision_boundary.x_values
+                this.y_values = data.decision_boundary.y_values
 
-    const x = d3.scaleBand()
-        .rangeRound([0, width])
-        .padding(0.1)
-        .domain(data.map((d, i) => i));
+                this.createChart()
+            } catch (error) {
+                console.error('로지스틱 회귀 분석 중 에러 발생:', error)
+            }
+        },
+        createChart () {
+            if (!this.X.length || !this.y.length || !this.x_values.length || !this.y_values.length) {
+                console.warn('데이터가 제대로 처리되지 않고 있습니다!')
+                return
+            }
 
-    const y = d3.scaleLinear()
-        .rangeRound([height, 0])
-        .domain([0, d3.max(data, d => d)]);
+            // svg 컨테이너 크기 설정
+            const chartContainer = this.$refs.chartContainer
+            this.svgWidth = chartContainer.clientWidth
+            this.svgHeight = chartContainer.clientHeight
 
-    g.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x));
+            // d3 플롯팅 목적으로 사용할 template에 있는 ref svg 요소를 초기화
+            d3.select(this.$refs.svg).selectAll("*").remove()
+            
+            // svg 요소 크기 지정
+            const svg = d3.select(this.$refs.svg)
+                            .attr('width', this.svgWidth)
+                            .attr('height', this.svgHeight)
 
-    g.append("g")
-        .call(d3.axisLeft(y));
+            // 마진 설정 및 그룹 요소 추가
+            const g = svg.append('g')
+                        .attr('transform', 
+                            `translate(${this.margin.left}, ${this.margin.top})`)
 
-    g.selectAll(".bar")
-        .data(data)
-        .enter().append("rect")
-        .attr("class", "bar")
-        .attr("x", (d, i) => x(i))
-        .attr("y", d => y(d))
-        .attr("width", x.bandwidth())
-        .attr("height", d => height - y(d))
-        .attr("fill", "steelblue");
+            const x = d3.scaleLinear()
+                        .domain(d3.extent(this.X, d => d[0]))
+                        .range([0, this.svgWidth - this.margin.left - this.margin.right])
+
+            const y = d3.scaleLinear()
+                        .domain(d3.extent(this.X, d => d[1]))
+                        .range([this.svgHeight - this.margin.top - this.margin.bottom, 0])
+
+            g.append('g')
+                .attr('transform', 
+                    `translate(0, ${this.svgHeight - this.margin.top - this.margin.bottom })`)
+                .call(d3.axisBottom(x))
+
+            g.append('g')
+                .call(d3.axisLeft(y))
+
+            g.selectAll('circle')
+                .data(this.X)
+                .enter()
+                .append('circle')
+                .attr('cx', d => x(d[0]))
+                .attr('cy', d => y(d[1]))
+                .attr('r', 5)
+                .style('fill', (d, i) => this.y[i] === 1 ? 'green' : 'blue')
+
+            // 결정 경계를 그리는 코드 추가
+            const line = d3.line()
+                    .x(d => x(d[0]))
+                    .y(d => y(d[1]))
+
+            const decisionBoundary = this.x_values.map((x_value, i) => [x_value, this.y_values[i]])
+
+            g.append('path')
+                .datum(decisionBoundary)
+                .attr('d', line)
+                .attr('stroke', 'red')
+                .attr('stroke-width', 2)
+                .attr('fill', 'none')
+        },
+        handleResize () {
+            clearTimeout(this.resizeTimer)
+            this.resizeTimer = setTimeout(() => {
+                const chartContainer = this.$refs.chartContainer
+                this.svgWidth = chartContainer.clientWidth
+                this.svgHeight = chartContainer.clientHeight
+
+                d3.select(this.$refs.svg)
+                        .attr('viewBox', `0 0 ${this.svgWidth} ${this.svgHeight}`)
+
+                this.createChart()
+            }, 200)
+        }
     }
 }
-};
 </script>
 
 <style scoped>
-#bar-chart {
-width: 100%;
-height: 400px;
+.chart-container {
+    width: 80%;
+    height: 60%;
+    margin: auto;
 }
-.bar {
-fill: steelblue;
-}
-.bar:hover {
-fill: orange;
+
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 </style>
-  
