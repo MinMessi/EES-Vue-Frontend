@@ -69,6 +69,9 @@
         <v-btn block x-large outlined class="mt-4" @click="onAddToCart" height="50">
           위시리스트 <v-icon right>mdi-heart-outline</v-icon>
         </v-btn>
+        <v-btn block x-large outlined class="mt-4" @click="goToBack" height="50">
+          목록으로 돌아가기
+        </v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -178,6 +181,9 @@ export default {
     },
     goToCart() {
       this.$router.push({ name: "CartListPage" });
+    },
+    goToBack() {
+      this.$router.go(-1);
     },
     getProductImageUrl(imageName) {
       console.log("imageName:", imageName);
