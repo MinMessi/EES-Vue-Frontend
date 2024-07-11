@@ -5,28 +5,17 @@
                 <v-card class="pa-4" outlined>
                     <v-icon size="48" color="primary" class="mb-4">mdi-account-check</v-icon>
                     <h2 class="subtitle-1 font-weight-bold mb-4">특정 회원 이탈 예측</h2>
-                    <v-select
-                        v-model="user.gender"
-                        :items="genderOptions"
-                        label="성별"
-                        outlined
-                        dense
-                    ></v-select>
-                    <v-text-field v-model.number="user.birth_year" label="출생 연도" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.num_logins" label="로그인 횟수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.average_login_interval" label="평균 로그인 간격" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.days_from_last_login" label="마지막 로그인 후 일수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.member_maintenance" label="회원 유지 기간" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.num_orders" label="주문 횟수" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.average_order_interval" label="평균 주문 간격" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.total_spent" label="총 지출" type="number" outlined dense></v-text-field>
-                    <v-text-field v-model.number="user.total_quantity" label="총 구매 수량" type="number" outlined dense></v-text-field>
+                    <v-text-field v-model.number="accountId" label="계정 ID" type="number" outlined dense></v-text-field>
+                    <v-btn block color="info" class="mt-2" @click="fetchUserInfo" :loading="loading">
+                        <v-icon left>mdi-account-search</v-icon>
+                        사용자 정보 불러오기
+                    </v-btn>
                     <v-divider class="my-4"></v-divider>
-                    <v-btn block color="primary" @click="trainUserModel" :loading="loading">
+                    <v-btn block color="primary" @click="trainUserModel" :loading="loading" :disabled="!user.gender">
                         <v-icon left>mdi-brain</v-icon>
                         모델 학습
                     </v-btn>
-                    <v-btn block color="success" class="mt-2" @click="predictUserWithdrawal" :loading="loading">
+                    <v-btn block color="success" class="mt-2" @click="predictUserWithdrawal" :loading="loading" :disabled="!user.gender">
                         <v-icon left>mdi-account-off</v-icon>
                         회원 이탈 예측
                     </v-btn>
@@ -57,6 +46,7 @@ import axiosInstance from "@/utility/axiosInstance";
 export default {
     data() {
         return {
+            accountId: null,
             user: {
                 gender: '',
                 birth_year: null,
@@ -69,20 +59,37 @@ export default {
                 total_spent: null,
                 total_quantity: null,
             },
-            genderOptions: ['MALE', 'FEMALE'], // Added gender options
+            genderOptions: ['MALE', 'FEMALE'],
             userResult: null,
-            trainResult: null, // Added trainResult to the data
+            trainResult: null,
             error: null,
             loading: false,
         };
     },
     methods: {
+        async fetchUserInfo() {
+            this.resetState();
+            this.loading = true;
+            try {
+                const response = await axiosInstance.fastapiAxiosInst.post("/user-info", { account_id: this.accountId }, {
+                    timeout: 60000,
+                });
+                console.log("User info response:", response.data);
+                Object.assign(this.user, response.data);
+                console.log("User object after fetching info:", this.user);
+            } catch (err) {
+                this.error = err.response ? err.response.data.error : err.message;
+            } finally {
+                this.loading = false;
+            }
+        },
         async trainUserModel() {
             const data = { ...this.user };
             this.executePostRequest("/train-user-withdraw", data, null, "모델 학습 완료");
         },
         async predictUserWithdrawal() {
             const data = { ...this.user };
+            console.log("Data being sent to predict:", JSON.stringify(data));
             this.executePostRequest("/predict-user-withdraw", data, "predicted_user_withdraw");
         },
         async executePostRequest(url, data = {}, resultKey = null, successMessage = null) {
@@ -92,6 +99,7 @@ export default {
                 const response = await axiosInstance.fastapiAxiosInst.post(url, data, {
                     timeout: 60000,
                 });
+                console.log("Response from server:", response.data);
                 if (resultKey) {
                     this.userResult = response.data;
                 } else if (successMessage) {
@@ -105,7 +113,7 @@ export default {
         },
         resetState() {
             this.userResult = null;
-            this.trainResult = null; // Reset trainResult
+            this.trainResult = null;
             this.error = null;
         },
     },
