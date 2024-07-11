@@ -79,11 +79,13 @@ export default {
             }
         },
         async trainModel() {
-            const data = JSON.parse(JSON.stringify(this.form)); // Convert Proxy to regular object
+            // const data = JSON.parse(JSON.stringify(this.form)); // Convert Proxy to regular object
+            const data = this.form
             this.executePostRequest("/train-user-spent", data, null, "모델 학습 완료");
         },
         async predictSpent() {
             const data = JSON.parse(JSON.stringify(this.form)); // Convert Proxy to regular object
+            // const data = this.form; // Convert Proxy to regular object
             console.log("Data being sent to predict:", JSON.stringify(data)); // Debugging
             this.executePostRequest("/predict-user-spent", data, "expected_spent");
         },
