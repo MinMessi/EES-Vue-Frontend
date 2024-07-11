@@ -1,9 +1,14 @@
 <template>
   <v-container>
     <div class="navigation-container">
-      <v-icon class="left-arrow" @click="navigateToPrevious">mdi-chevron-left</v-icon>
-      <v-card v-if="review" class="question-card">
-        <v-card-title class="title-section" style="text-align: center;">
+      <v-icon v-if="previousReviewExists" class="left-arrow" @click="navigateToPrevious"
+        >mdi-chevron-left</v-icon
+      >
+      <v-icon v-if="nextReviewExists" class="right-arrow" @click="navigateToNext"
+        >mdi-chevron-right</v-icon
+      >
+      <v-card v-if="review && !isLoading" class="question-card">
+        <v-card-title class="title-section" style="text-align: center">
           {{ review.title }}
         </v-card-title>
         <v-card-subtitle class="subtitle-section">
@@ -24,15 +29,17 @@
           {{ review.content }}
         </v-card-text>
       </v-card>
+      <v-progress-circular v-if="isLoading" indeterminate color="primary">
+      </v-progress-circular>
     </div>
+
     <div
       v-if="isAuthor"
-      class="floating-menu-container" @mouseover="showMenu" @mouseleave="hideMenu">
-      <v-btn 
-        class="floating-button"
-        @mouseover="showMenu"
-        @mouseleave="hideMenu"
-      >
+      class="floating-menu-container"
+      @mouseover="showMenu"
+      @mouseleave="hideMenu"
+    >
+      <v-btn class="floating-button" @mouseover="showMenu" @mouseleave="hideMenu">
         <v-icon>{{ menuOpen ? "mdi-close" : "mdi-menu" }}</v-icon>
       </v-btn>
       <div v-if="menuOpen" class="floating-menu">
@@ -49,11 +56,8 @@
         </v-btn>
       </div>
     </div>
-    <div
-      v-if="!isAuthor"
-      class="floating-menu-container"
-    >
-      <v-btn 
+    <div v-if="!isAuthor" class="floating-menu-container">
+      <v-btn
         class="floating-button"
         @mouseover="showMenu"
         @mouseleave="hideMenu"
@@ -89,7 +93,7 @@ import "@mdi/font/css/materialdesignicons.css";
 
 const reviewModule = "reviewModule";
 const authenticationModule = "authenticationModule";
-const accountModule = 'accountModule'
+const accountModule = "accountModule";
 
 export default {
   props: {
@@ -101,96 +105,87 @@ export default {
   data() {
     return {
       menuOpen: false,
-      showNextArrow: true,
       showDeleteDialog: false,
       showShareDialog: false,
-      currentUserNickname: '', // 현재 로그인한 사용자의 닉네임을 저장할 변수
+      currentUserNickname: "",
+      previousReviewExists: false,
+      nextReviewExists: false,
+      isLoading: true,
     };
   },
   computed: {
     ...mapState("reviewModule", ["review"]),
     ...mapState("authenticationModule", ["isAuthenticated"]),
     isAuthor() {
-      if (!this.review || !this.review.writer) {
-        return false;
-      }
-      return this.review.writer === this.currentUserNickname;
+      return this.review && this.review.writer === this.currentUserNickname;
     },
   },
   methods: {
     ...mapActions(reviewModule, ["requestReviewToDjango", "incrementReviewViewCount"]),
-    ...mapActions(accountModule, ['requestNicknameToDjango']),
-    navigateToPrevious() {
-      const previousId = Number(this.reviewId) + 1;
-      if (previousId > 0) {
-        this.$router.push(`/review/read/${previousId}`);
-      }
-    },
-    async navigateToNext() {
-      const nextId = Number(this.reviewId) - 1;
-      if (nextId <= 0) {
-        this.showNextArrow = false;
-        return;
-      }
-      const review = await this.requestReviewToDjango(nextId);
-      if (!review || !review.reviewImage) {
-        this.showNextArrow = false;
-        this.$router.push(`/review/read/${this.reviewId - 1}`);
-      } else {
-        this.showNextArrow = true;
-        this.$router.push(`/review/read/${nextId + 1}`);
-      }
-    },
-    getReviewImageUrl(imageName) {
-      console.log("imageName:", imageName);
-      if (imageName) {
-        return require(`@/assets/images/reviewImages/${imageName}`);
-      }
-      return null;
-    },
-    copyUrlToClipboard() {
-      const url = window.location.href;
-      const textarea = document.createElement("textarea");
-      textarea.value = url;
-      document.body.appendChild(textarea);
-      textarea.select();
+    ...mapActions(accountModule, ["requestNicknameToDjango"]),
+
+    async checkAdjacentReviews() {
+      this.isLoading = true;
+      const currentId = Number(this.reviewId);
+
+      this.nextReviewExists = currentId > 1;
+
       try {
-        document.execCommand("copy");
-        this.showShareDialog = true;
-        setTimeout(() => {
-          this.showShareDialog = false;
-        }, 2000);
-      } catch (err) {
-        alert("주소 복사 실패");
-        console.error("Failed to copy: ", err);
+        await this.requestReviewToDjango(currentId + 1);
+        this.previousReviewExists = true;
+      } catch (error) {
+        this.previousReviewExists = false;
       }
-      document.body.removeChild(textarea);
+
+      await this.requestReviewToDjango(currentId);
+      this.isLoading = false;
     },
+
+    navigateToPrevious() {
+      if (this.previousReviewExists) {
+        this.$router.push(`/review/read/${Number(this.reviewId) + 1}`);
+      }
+    },
+
+    navigateToNext() {
+      if (this.nextReviewExists) {
+        this.$router.push(`/review/read/${Number(this.reviewId) - 1}`);
+      }
+    },
+
+    getReviewImageUrl(imageName) {
+      return imageName ? require(`@/assets/images/reviewImages/${imageName}`) : null;
+    },
+
+    copyUrlToClipboard() {
+      navigator.clipboard
+        .writeText(window.location.href)
+        .then(() => {
+          this.showShareDialog = true;
+          setTimeout(() => (this.showShareDialog = false), 2000);
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          alert("주소 복사 실패");
+        });
+    },
+
     showMenu() {
       this.menuOpen = true;
     },
+
     hideMenu() {
       this.menuOpen = false;
     },
   },
   async created() {
-    const review = await this.requestReviewToDjango(this.reviewId);
-    if (this.reviewId == 1) {
-      this.showNextArrow = false;
-    } else {
-      this.showNextArrow = true;
-    }
+    await this.checkAdjacentReviews();
     await this.incrementReviewViewCount(this.reviewId);
     this.currentUserNickname = await this.requestNicknameToDjango();
   },
   watch: {
-    async reviewId(newId) {
-      const review = await this.requestReviewToDjango(newId);
-      if (newId == 1) {
-        this.showNextArrow = false;
-      } else {
-        this.showNextArrow = true;
-      }
+    async reviewId() {
+      await this.checkAdjacentReviews();
     },
   },
 };
