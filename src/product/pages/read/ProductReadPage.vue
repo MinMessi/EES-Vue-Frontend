@@ -66,9 +66,6 @@
           장바구니
         </v-btn>
 
-        <v-btn block x-large outlined class="mt-4" @click="onAddToCart" height="50">
-          위시리스트 <v-icon right>mdi-heart-outline</v-icon>
-        </v-btn>
         <v-btn block x-large outlined class="mt-4" @click="goToBack" height="50">
           목록으로 돌아가기
         </v-btn>
