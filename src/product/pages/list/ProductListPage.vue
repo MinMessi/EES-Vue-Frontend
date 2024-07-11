@@ -1,29 +1,24 @@
 <template>
   <v-container>
-    <h2 style="margin-left: 46%">RUNNING SHOES PRODUCT LIST</h2>
+    <h2 style="margin-left: 46%; margin-top: 24px">RUNNING SHOES PRODUCT LIST</h2>
     <v-row>
       <v-col cols="3">
         <v-card>
-          <v-card-title>가격대</v-card-title>
+          <v-card-title style="text-align: center">FILTER</v-card-title>
           <v-card-text>
             <v-checkbox
               v-model="selectedPriceRanges"
-              label="50,000 - 100,000 원"
-              value="50000-100000"
-            ></v-checkbox>
-            <v-checkbox
-              v-model="selectedPriceRanges"
-              label="100,000 - 150,000 원"
+              label="100,000원 - 149,999원"
               value="100000-150000"
             ></v-checkbox>
             <v-checkbox
               v-model="selectedPriceRanges"
-              label="150,000 - 200,000 원"
+              label="150,000원 - 199,999원"
               value="150000-200000"
             ></v-checkbox>
             <v-checkbox
               v-model="selectedPriceRanges"
-              label="200,000 원 +"
+              label="200,000원 이상"
               value="200000+"
             ></v-checkbox>
           </v-card-text>
@@ -143,11 +138,11 @@ export default {
 
       return this.productList.filter((product) => {
         return this.selectedPriceRanges.some((range) => {
-          const [min, max] = range.split("-").map(Number);
-          if (max) {
-            return product.productPrice >= min && product.productPrice < max;
+          if (range === "200000+") {
+            return product.productPrice >= 200000;
           } else {
-            return product.productPrice >= min;
+            const [min, max] = range.split("-").map(Number);
+            return product.productPrice >= min && product.productPrice < max;
           }
         });
       });
